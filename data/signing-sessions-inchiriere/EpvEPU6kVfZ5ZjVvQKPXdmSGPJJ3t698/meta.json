@@ -1,0 +1,29 @@
+{
+  "token": "EpvEPU6kVfZ5ZjVvQKPXdmSGPJJ3t698",
+  "createdBy": "user_1",
+  "createdAt": "2026-02-23T18:44:53.192Z",
+  "status": "pending",
+  "agentData": {
+    "data_vizionarii": "2026-02-23",
+    "ora_vizionarii": "20:27",
+    "tip_imobil": "Apartament cu 2 camere",
+    "adresa_completa": "Strada aviatiei nr 3 ap 28",
+    "adresa_publica": "Aviatiei",
+    "comision_procent": "50%",
+    "comision_termen_plata_zile": "7",
+    "agency_denumire": "Sky imobiliare",
+    "agency_sediu": "strada aviatiei",
+    "agency_nr_orc": "",
+    "agency_cui": "3432423423",
+    "agency_iban": "",
+    "agency_banca": "",
+    "agency_reprezentat_prin": "",
+    "agency_functia": "",
+    "agent_name": "Alexandru cojoaca"
+  },
+  "agentSignatureMeta": {
+    "signed_at": "2026-02-23T18:44:53.184Z",
+    "timezone": "Europe/Bucharest",
+    "ip": "::1"
+  }
+}

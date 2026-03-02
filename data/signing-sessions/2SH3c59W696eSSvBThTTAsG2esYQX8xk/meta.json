@@ -1,0 +1,41 @@
+{
+  "token": "2SH3c59W696eSSvBThTTAsG2esYQX8xk",
+  "createdBy": "user_1",
+  "createdAt": "2026-03-01T11:21:37.138Z",
+  "status": "signed",
+  "agentData": {
+    "data_vizionarii": "2026-03-02",
+    "ora_vizionarii": "02:11",
+    "tip_imobil": "Apartament cu 2 camere",
+    "adresa_completa": "Herastrau",
+    "adresa_publica": "soseaua nordului",
+    "comision_procent": "2",
+    "agency_denumire": "Sky imobiliare",
+    "agency_sediu": "strada aviatiei",
+    "agency_nr_orc": "j40/2020",
+    "agency_cui": "3432423423",
+    "agency_iban": "",
+    "agency_banca": "",
+    "agency_reprezentat_prin": "Mihai",
+    "agency_functia": "Administrator",
+    "agent_name": "Alexandru cojoaca"
+  },
+  "agentSignatureMeta": {
+    "signed_at": "2026-03-01T11:21:36.920Z",
+    "timezone": "Europe/Bucharest",
+    "ip": "::1"
+  },
+  "signedAt": "2026-03-01T11:24:30.818Z",
+  "clientData": {
+    "nume": "alex",
+    "telefon": "078635228",
+    "email": "",
+    "ci_serie": "1234",
+    "ci_numar": "1234"
+  },
+  "signatureMeta": {
+    "signed_at": "2026-03-01T11:24:30.818Z",
+    "timezone": "Europe/Bucharest",
+    "ip": "::1"
+  }
+}

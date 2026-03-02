@@ -1,0 +1,29 @@
+{
+  "token": "QGGMPeHwx5rGf4xVYjBE6Q2CgnSHZ2db",
+  "createdBy": "user_1",
+  "createdAt": "2026-02-23T18:45:34.850Z",
+  "status": "pending",
+  "agentData": {
+    "data_vizionarii": "",
+    "ora_vizionarii": "",
+    "tip_imobil": "",
+    "adresa_completa": "",
+    "adresa_publica": "",
+    "comision_procent": "",
+    "comision_termen_plata_zile": "7",
+    "agency_denumire": "Sky imobiliare",
+    "agency_sediu": "strada aviatiei",
+    "agency_nr_orc": "",
+    "agency_cui": "3432423423",
+    "agency_iban": "",
+    "agency_banca": "",
+    "agency_reprezentat_prin": "",
+    "agency_functia": "",
+    "agent_name": "Alexandru cojoaca"
+  },
+  "agentSignatureMeta": {
+    "signed_at": "2026-02-23T18:45:34.847Z",
+    "timezone": "Europe/Bucharest",
+    "ip": "::1"
+  }
+}

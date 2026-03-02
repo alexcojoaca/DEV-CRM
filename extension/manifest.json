@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "CRM Anunțuri Imobiliare",
+  "version": "1.0.0",
+  "description": "Preia anunțuri de pe imobiliare.ro, OLX, Storia și adaugă în portofoliul de proprietăți.",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "https://www.imobiliare.ro/*",
+    "https://imobiliare.ro/*",
+    "https://www.olx.ro/*",
+    "https://olx.ro/*",
+    "https://www.storia.ro/*",
+    "https://storia.ro/*",
+    "http://localhost:*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Adaugă anunțul în CRM"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.imobiliare.ro/*",
+        "https://imobiliare.ro/*",
+        "https://www.olx.ro/*",
+        "https://olx.ro/*",
+        "https://www.storia.ro/*",
+        "https://storia.ro/*"
+      ],
+      "js": ["content/scraper.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

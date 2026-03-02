@@ -1,0 +1,28 @@
+{
+  "token": "cy5BXVPgz3cPyMjbACJVT6Y5TfKTXc2a",
+  "createdBy": "user_1",
+  "createdAt": "2026-02-23T13:03:23.309Z",
+  "status": "pending",
+  "agentData": {
+    "data_vizionarii": "2026-02-23",
+    "ora_vizionarii": "15:03",
+    "tip_imobil": "Ap 2 camere",
+    "adresa_completa": "Bucuresti",
+    "adresa_publica": "Aviatiei",
+    "comision_procent": "2",
+    "agency_denumire": "",
+    "agency_sediu": "",
+    "agency_nr_orc": "",
+    "agency_cui": "",
+    "agency_iban": "",
+    "agency_banca": "",
+    "agency_reprezentat_prin": "",
+    "agency_functia": "Administrator",
+    "agent_name": ""
+  },
+  "agentSignatureMeta": {
+    "signed_at": "2026-02-23T13:03:23.306Z",
+    "timezone": "Europe/Bucharest",
+    "ip": "::ffff:192.168.100.101"
+  }
+}

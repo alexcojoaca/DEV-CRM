@@ -1,0 +1,141 @@
+/**
+ * Premium Real Estate Site – 3 theme variants
+ * Use data-theme="minimal" | "dark" | "contemporary" on wrapper (e.g. html or main site container)
+ * All components use Tailwind tokens: bg-background, text-foreground, bg-primary, etc.
+ */
+
+/* Default (and Theme 1: Modern Minimal) – applied on :root so tokens always exist */
+:root {
+  --site-background: 0 0% 100%;
+  --site-foreground: 220 20% 12%;
+  --site-card: 0 0% 100%;
+  --site-card-foreground: 220 20% 12%;
+  --site-primary: 217 45% 22%;
+  --site-primary-foreground: 0 0% 100%;
+  --site-accent: 160 84% 28%;
+  --site-accent-foreground: 0 0% 100%;
+  --site-muted: 220 14% 96%;
+  --site-muted-foreground: 220 10% 42%;
+  --site-border: 220 13% 91%;
+  --site-input: 220 13% 91%;
+  --site-ring: 217 45% 22%;
+  --site-hero-overlay: 220 20% 12% / 0.75;
+  --site-radius: 0.75rem;
+  --site-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --site-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.06), 0 2px 6px -2px rgb(0 0 0 / 0.04);
+  --site-shadow-md: 0 12px 24px -4px rgb(0 0 0 / 0.08), 0 4px 8px -2px rgb(0 0 0 / 0.04);
+  --site-shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.12);
+  --site-shadow-xl: 0 32px 64px -12px rgb(0 0 0 / 0.14);
+  --site-shadow-2xl: 0 40px 80px -16px rgb(0 0 0 / 0.18), 0 12px 24px -8px rgb(0 0 0 / 0.08);
+  --site-shadow-glow: 0 0 40px -8px hsl(var(--site-primary) / 0.35);
+}
+
+[data-theme="minimal"] {
+  --site-background: 0 0% 100%;
+  --site-foreground: 220 20% 12%;
+  --site-card: 0 0% 100%;
+  --site-card-foreground: 220 20% 12%;
+  --site-primary: 217 45% 22%;
+  --site-primary-foreground: 0 0% 100%;
+  --site-accent: 160 84% 28%;
+  --site-accent-foreground: 0 0% 100%;
+  --site-muted: 220 14% 96%;
+  --site-muted-foreground: 220 10% 42%;
+  --site-border: 220 13% 91%;
+  --site-input: 220 13% 91%;
+  --site-ring: 217 45% 22%;
+  --site-hero-overlay: 220 20% 12% / 0.75;
+  --site-radius: 0.75rem;
+  --site-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  --site-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.06), 0 2px 6px -2px rgb(0 0 0 / 0.04);
+  --site-shadow-md: 0 12px 24px -4px rgb(0 0 0 / 0.08), 0 4px 8px -2px rgb(0 0 0 / 0.04);
+  --site-shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.12);
+  --site-shadow-xl: 0 32px 64px -12px rgb(0 0 0 / 0.14);
+  --site-shadow-2xl: 0 40px 80px -16px rgb(0 0 0 / 0.18), 0 12px 24px -8px rgb(0 0 0 / 0.08);
+  --site-shadow-glow: 0 0 40px -8px hsl(var(--site-primary) / 0.35);
+}
+
+/* Theme 2: Luxury Dark – deep charcoal, soft gold accent, cream text */
+[data-theme="dark"] {
+  --site-background: 220 18% 10%;
+  --site-foreground: 40 20% 96%;
+  --site-card: 220 16% 14%;
+  --site-card-foreground: 40 20% 96%;
+  --site-primary: 43 74% 49%;
+  --site-primary-foreground: 220 18% 10%;
+  --site-accent: 43 74% 49%;
+  --site-accent-foreground: 220 18% 10%;
+  --site-muted: 220 14% 18%;
+  --site-muted-foreground: 220 10% 60%;
+  --site-border: 220 12% 22%;
+  --site-input: 220 12% 22%;
+  --site-ring: 43 74% 49%;
+  --site-hero-overlay: 220 18% 6% / 0.85;
+  --site-radius: 0.75rem;
+  --site-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+  --site-shadow: 0 4px 14px -2px rgb(0 0 0 / 0.4);
+  --site-shadow-md: 0 12px 28px -4px rgb(0 0 0 / 0.45);
+  --site-shadow-lg: 0 24px 48px -12px rgb(0 0 0 / 0.5);
+  --site-shadow-xl: 0 32px 64px -12px rgb(0 0 0 / 0.55);
+  --site-shadow-2xl: 0 40px 80px -16px rgb(0 0 0 / 0.6);
+  --site-shadow-glow: 0 0 48px -8px hsl(var(--site-primary) / 0.5);
+}
+
+/* Theme 3: Contemporary Luxury – warm beige, deep green accent, organic premium */
+[data-theme="contemporary"] {
+  --site-background: 35 25% 97%;
+  --site-foreground: 140 15% 18%;
+  --site-card: 0 0% 100%;
+  --site-card-foreground: 140 15% 18%;
+  --site-primary: 152 45% 22%;
+  --site-primary-foreground: 0 0% 100%;
+  --site-accent: 152 45% 28%;
+  --site-accent-foreground: 0 0% 100%;
+  --site-muted: 35 20% 93%;
+  --site-muted-foreground: 140 10% 38%;
+  --site-border: 35 15% 88%;
+  --site-input: 35 15% 88%;
+  --site-ring: 152 45% 22%;
+  --site-hero-overlay: 140 20% 10% / 0.7;
+  --site-radius: 0.875rem;
+  --site-shadow-sm: 0 1px 3px 0 rgb(140 120 80 / 0.06);
+  --site-shadow: 0 4px 14px -2px rgb(140 120 80 / 0.08), 0 2px 6px -2px rgb(140 120 80 / 0.04);
+  --site-shadow-md: 0 12px 28px -4px rgb(140 120 80 / 0.1);
+  --site-shadow-lg: 0 24px 48px -12px rgb(140 120 80 / 0.12);
+  --site-shadow-xl: 0 32px 64px -12px rgb(140 120 80 / 0.14);
+  --site-shadow-2xl: 0 40px 80px -16px rgb(140 120 80 / 0.16);
+  --site-shadow-glow: 0 0 40px -8px hsl(var(--site-primary) / 0.3);
+}
+
+/* Wow: smooth transitions for theme elements */
+[data-theme] .site-btn-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+[data-theme] .site-btn-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--site-shadow-lg);
+}
+[data-theme] .site-card-hover {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.2s ease;
+}
+[data-theme] .site-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--site-shadow-2xl);
+}
+[data-theme] .site-link-underline {
+  position: relative;
+  transition: color 0.2s ease;
+}
+[data-theme] .site-link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+[data-theme] .site-link-underline:hover::after {
+  width: 100%;
+}

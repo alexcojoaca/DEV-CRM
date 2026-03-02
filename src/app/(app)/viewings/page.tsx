@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,8 @@ import {
   addViewing,
   updateViewing,
   deleteViewing,
-  type Viewing,
 } from "@/features/viewings/viewingMockData";
-import type { ViewingFormData } from "@/features/viewings/viewingTypes";
+import type { Viewing, ViewingFormData } from "@/features/viewings/viewingTypes";
 import { getProperties, getPropertyById } from "@/features/properties/propertyMockData";
 import { getClients, getClientById } from "@/features/clients/clientMockData";
 import { Plus, Search, Calendar, ArrowLeft, Bell, X } from "lucide-react";
@@ -46,7 +45,7 @@ const defaultFormData: ViewingFormData = {
   notes: undefined,
 };
 
-export default function ViewingsPage() {
+function ViewingsPageContent() {
   const searchParams = useSearchParams();
   const { organization } = useSession();
   const workspaceId = organization?.id ?? null;
@@ -286,8 +285,8 @@ export default function ViewingsPage() {
                 <ViewingListItem
                   key={viewing.id}
                   viewing={viewing}
-                  property={getPropertyById(workspaceId, viewing.propertyId)}
-                  client={getClientById(workspaceId, viewing.clientId)}
+                  property={viewing.propertyId ? getPropertyById(workspaceId, viewing.propertyId) : null}
+                  client={viewing.clientId ? getClientById(workspaceId, viewing.clientId) : null}
                   isActive={selectedId === viewing.id}
                   onClick={() => handleSelectViewing(viewing)}
                 />
@@ -353,5 +352,19 @@ export default function ViewingsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ViewingsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="-m-4 flex h-[calc(100vh-5rem)] min-h-[480px] items-center justify-center rounded-xl border border-purple-200/50 bg-white">
+          <div className="h-32 w-32 rounded-full border-4 border-purple-200 border-t-purple-500 animate-spin" />
+        </div>
+      }
+    >
+      <ViewingsPageContent />
+    </Suspense>
   );
 }

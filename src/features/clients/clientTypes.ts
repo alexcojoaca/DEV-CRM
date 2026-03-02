@@ -27,6 +27,7 @@ export interface Client {
   propertyType: ClientPropertyType;
   name: string;
   phone: string;
+  email?: string;
   county?: string;
   zone?: string;
   roomsMin?: number;

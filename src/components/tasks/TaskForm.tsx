@@ -137,7 +137,7 @@ export function TaskForm({
               ))}
             </SelectContent>
           </Select>
-          {(data.relatedTo?.type ?? "") !== "none" && data.relatedTo && (
+          {data.relatedTo && (
             <Input
               value={data.relatedTo.name}
               onChange={(e) =>

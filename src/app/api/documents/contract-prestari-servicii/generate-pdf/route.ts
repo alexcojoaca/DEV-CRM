@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildContractPrestariServiciiPdf } from "@/lib/contractPrestariServiciiPdf";
+import type { ContractPrestariServiciiPdfPayload } from "@/lib/contractPrestariServiciiPdf";
 import { createDownloadToken } from "@/lib/pdf-temp-store";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const variant = body.variant === "chirie" ? "chirie" : "vanzare";
 
-    const payload = {
+    const payload: ContractPrestariServiciiPdfPayload = {
       variant,
       nr_contract: body.nr_contract ?? "",
       data_contract: body.data_contract ?? "",

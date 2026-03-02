@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -9,7 +10,7 @@ import { FisaVizionareVanzareFlow } from "@/components/documents/FisaVizionareVa
 import { FisaVizionareInchiriereFlow } from "@/components/documents/FisaVizionareInchiriereFlow";
 import { Button } from "@/components/ui/button";
 
-export default function DocumentBySlugPage() {
+function DocumentBySlugPageContent() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : "";
   const documentType = getDocumentTypeBySlug(slug);
@@ -42,11 +43,34 @@ export default function DocumentBySlugPage() {
           <p className="text-sm text-muted-foreground">{documentType.description}</p>
         </div>
       </div>
-      {isFisaVanzare && <FisaVizionareVanzareFlow />}
-      {isFisaInchiriere && <FisaVizionareInchiriereFlow />}
+      {isFisaVanzare && (
+        <Suspense fallback={<div className="h-64 rounded-xl border border-purple-100 bg-white animate-pulse" />}>
+          <FisaVizionareVanzareFlow />
+        </Suspense>
+      )}
+      {isFisaInchiriere && (
+        <Suspense fallback={<div className="h-64 rounded-xl border border-purple-100 bg-white animate-pulse" />}>
+          <FisaVizionareInchiriereFlow />
+        </Suspense>
+      )}
       {!isFisaVanzare && !isFisaInchiriere && (
         <DocumentForm documentType={documentType} />
       )}
     </div>
+  );
+}
+
+export default function DocumentBySlugPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-4">
+          <div className="h-8 w-48 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 animate-pulse" />
+          <div className="h-64 rounded-xl border border-purple-100 bg-white animate-pulse" />
+        </div>
+      }
+    >
+      <DocumentBySlugPageContent />
+    </Suspense>
   );
 }

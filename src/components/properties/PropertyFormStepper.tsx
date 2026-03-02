@@ -462,7 +462,7 @@ export function PropertyFormStepper({ open, onOpenChange, property, onSave }: Pr
                   <Label htmlFor="type">Tip proprietate *</Label>
                   <Select
                     value={formData.type}
-                    onValueChange={(value: PropertyType) => updateField("type", value)}
+                    onValueChange={(value: Property["type"]) => updateField("type", value)}
                     required
                   >
                     <SelectTrigger className="border-purple-200">

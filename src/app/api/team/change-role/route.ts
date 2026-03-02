@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     if (target.role === "OWNER") {
       return NextResponse.json({ error: "Cannot change owner role" }, { status: 400 });
     }
-    if (currentRole === "MANAGER" && (target.role === "OWNER" || target.role === "MANAGER")) {
+    if (currentRole === "MANAGER" && ["OWNER", "MANAGER"].includes(target.role)) {
       return NextResponse.json({ error: "Manager can only change AGENT roles" }, { status: 403 });
     }
     if (currentRole === "MANAGER" && newRole === "MANAGER") {

@@ -17,7 +17,7 @@ export async function GET(
       );
     }
     const filename = entry.filename;
-    return new NextResponse(entry.bytes, {
+    return new NextResponse(entry.bytes as any, {
       status: 200,
       headers: {
         "Content-Type": "application/octet-stream",

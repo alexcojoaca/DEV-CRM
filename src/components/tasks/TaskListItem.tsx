@@ -53,8 +53,7 @@ export function TaskListItem({
     >
       <Checkbox
         checked={task.completed}
-        onCheckedChange={(e) => {
-          e.stopPropagation();
+        onCheckedChange={() => {
           onToggle?.(task.id);
         }}
         onClick={(e) => e.stopPropagation()}

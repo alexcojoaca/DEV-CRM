@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PropertyCard } from "@/components/properties/PropertyCard";
@@ -88,7 +88,7 @@ function getPropertyAddress(p: Property): string {
 import { getClientById } from "@/features/clients/clientMockData";
 import { useSession } from "@/features/session/useSession";
 
-export default function PropertiesPage() {
+function PropertiesPageContent() {
   const { user, organization } = useSession();
   const workspaceId = organization?.id ?? null;
   const searchParams = useSearchParams();
@@ -499,5 +499,24 @@ export default function PropertiesPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <div className="h-10 w-1/2 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 animate-pulse" />
+          <div className="h-20 rounded-xl border-2 border-dashed border-purple-100 bg-purple-50/40 animate-pulse" />
+          <div className="space-y-3">
+            <div className="h-32 rounded-xl border border-purple-100 bg-white animate-pulse" />
+            <div className="h-32 rounded-xl border border-purple-100 bg-white animate-pulse" />
+          </div>
+        </div>
+      }
+    >
+      <PropertiesPageContent />
+    </Suspense>
   );
 }

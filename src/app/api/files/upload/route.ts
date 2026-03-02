@@ -6,8 +6,8 @@ import { UnauthorizedError, ForbiddenError, QuotaExceededError } from "@/lib/err
 
 const DEFAULT_USER_QUOTA_BYTES = 1073741824; // 1GB
 
-async function ensureQuota(workspaceId: string, userId: string | null, additionalBytes: number) {
-  const key = { workspaceId, userId: userId ?? null };
+async function ensureQuota(workspaceId: string, userId: string, additionalBytes: number) {
+  const key = { workspaceId, userId };
   let quota = await prisma.storageQuota.findUnique({
     where: { workspaceId_userId: key },
   });

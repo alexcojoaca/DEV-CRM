@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ function openWhatsApp(phone: string) {
   window.open(`https://wa.me/${clean}`, "_blank", "noopener,noreferrer");
 }
 
-export default function ClientsPage() {
+function ClientsPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { organization } = useSession();
@@ -334,5 +334,20 @@ export default function ClientsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ClientsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full flex-col md:flex-row gap-4 p-4">
+          <div className="w-full md:w-[380px] shrink-0 h-64 rounded-xl border border-purple-100 bg-white animate-pulse" />
+          <div className="flex-1 min-h-[400px] rounded-xl border border-purple-100 bg-white animate-pulse" />
+        </div>
+      }
+    >
+      <ClientsPageContent />
+    </Suspense>
   );
 }

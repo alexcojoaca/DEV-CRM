@@ -3,7 +3,7 @@
  * Returns title, suggestion text, and primary CTA for the current entity state.
  */
 
-import type { Lead } from "@/features/leads/leadTypes";
+import type { Lead as BasicLead } from "@/features/leads/leadTypes";
 import type { Client } from "@/features/clients/clientTypes";
 import type { Deal } from "@/features/deals/dealTypes";
 
@@ -14,14 +14,25 @@ export interface NextBestAction {
   ctaId: string;
 }
 
-function leadHasQualification(lead: Lead): boolean {
+interface LeadForRules extends BasicLead {
+  status?: string;
+  budgetMin?: number;
+  budgetMax?: number;
+  timeline?: string;
+  interest?: string;
+  intentType?: string;
+  zones?: string[];
+  preferredZones?: string[];
+}
+
+function leadHasQualification(lead: LeadForRules): boolean {
   const hasBudget = lead.budgetMin != null || lead.budgetMax != null;
   const hasTimeline = !!lead.timeline?.trim();
   const hasIntent = !!lead.interest?.trim() || !!lead.intentType;
   return !!(hasBudget || hasTimeline) && !!hasIntent;
 }
 
-export function getNextBestActionForLead(lead: Lead): NextBestAction {
+export function getNextBestActionForLead(lead: LeadForRules): NextBestAction {
   const status = lead.status;
 
   // Calculăm același tip de progres ca în piramida de lead:
@@ -105,7 +116,7 @@ export function getNextBestActionForLead(lead: Lead): NextBestAction {
 export function getNextBestActionForClient(client: Client): NextBestAction {
   const status = client.status;
 
-  if (status === "active") {
+  if (status === "qualified") {
     return {
       title: "Potrivire proprietăți",
       suggestion: "Caută proprietăți după buget, zone și criterii, apoi trimite opțiuni relevante.",
@@ -134,21 +145,12 @@ export function getNextBestActionForDeal(deal: Deal): NextBestAction {
     };
   }
 
-  if (status === "offer_sent") {
+  if (status === "in_progress") {
     return {
-      title: "Urmează oferta",
-      suggestion: "Stabilește un termen de răspuns și clarifică obiecțiile dacă există.",
-      ctaLabel: "Actualizează status",
-      ctaId: "update_status",
-    };
-  }
-
-  if (status === "offer_accepted" || status === "contract") {
-    return {
-      title: "Acte și checklist",
-      suggestion: "Completează checklist-ul: acte identitate, CF, programare notar.",
-      ctaLabel: "Completează checklist",
-      ctaId: "complete_checklist",
+      title: "Următorul pas",
+      suggestion: "Programează vizionare sau trimite o ofertă inițială către client.",
+      ctaLabel: "Programează vizionare",
+      ctaId: "schedule_viewing",
     };
   }
 

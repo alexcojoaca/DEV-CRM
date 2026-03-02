@@ -421,7 +421,7 @@ export function DealDetailPanel({ workspaceId, deal, onDealUpdated, onDealDelete
         </div>
         <div className="mt-2 max-h-[320px] overflow-y-auto space-y-2">
           {(deal.matchedProperties || []).map((m) => {
-            const prop = m.propertyId ? getPropertyById(m.propertyId) : null;
+            const prop = m.propertyId ? getPropertyById(workspaceId, m.propertyId) : null;
             const coverImage = prop?.images?.length
               ? normalizePropertyImages(prop.images)[0]?.data
               : null;

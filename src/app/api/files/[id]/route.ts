@@ -38,7 +38,7 @@ export async function GET(
     }
 
     const buffer = await streamToBuffer(stream);
-    return new NextResponse(buffer, {
+    return new NextResponse(buffer as any, {
       headers: {
         "Content-Type": asset.mimeType,
         "Content-Disposition": `inline; filename="${encodeURIComponent(asset.originalFileName)}"`,

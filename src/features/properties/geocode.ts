@@ -31,7 +31,7 @@ export function buildAddressQuery(parts: {
   const hasCounty = county?.trim();
   if (!hasStreet && !hasCounty) return null;
   const bits: string[] = [];
-  if (hasStreet) bits.push(number?.trim() ? `${street.trim()} ${number.trim()}` : street.trim());
+  if (hasStreet) bits.push(number?.trim() ? `${hasStreet} ${number.trim()}` : hasStreet);
   if (zone?.trim()) bits.push(zone.trim());
   if (hasCounty) bits.push(county!.trim());
   bits.push("România");

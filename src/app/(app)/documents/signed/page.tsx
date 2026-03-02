@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { Suspense, useEffect, useState, useCallback, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -74,7 +74,7 @@ function monthLabel(key: string): string {
   return `${monthName} ${y}`;
 }
 
-export default function SignedDocumentsPage() {
+function SignedDocumentsPageContent() {
   const searchParams = useSearchParams();
   const { user } = useSession();
   const [items, setItems] = useState<SignedItem[]>([]);
@@ -553,5 +553,24 @@ export default function SignedDocumentsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SignedDocumentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-4">
+          <div className="h-8 w-2/3 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 animate-pulse" />
+          <div className="h-10 rounded-lg border border-purple-100 bg-white animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-20 rounded-xl border border-purple-100 bg-white animate-pulse" />
+            <div className="h-20 rounded-xl border border-purple-100 bg-white animate-pulse" />
+          </div>
+        </div>
+      }
+    >
+      <SignedDocumentsPageContent />
+    </Suspense>
   );
 }

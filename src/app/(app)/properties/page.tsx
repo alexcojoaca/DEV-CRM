@@ -32,10 +32,8 @@ import {
   addProperty,
   updateProperty,
   deleteProperty,
-  type Property,
-  type PropertyFormData,
 } from "@/features/properties/propertyMockData";
-import type { PropertyImage } from "@/features/properties/propertyTypes";
+import type { Property, PropertyFormData, PropertyImage } from "@/features/properties/propertyTypes";
 
 /** Convertește data URL (base64) în File pentru upload. */
 function dataURLtoFile(dataUrl: string, filename: string): File {

@@ -548,7 +548,7 @@ export default function MatchesPage() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {currentMatches.map((client) => (
+                  {(currentMatches as Client[]).map((client) => (
                     <div
                       key={client.id}
                       className="flex items-start gap-3 rounded-xl border border-purple-100 bg-white p-3"

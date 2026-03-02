@@ -101,37 +101,6 @@ export default function PropertiesPage() {
   const viewIdFromUrl = searchParams.get("viewId");
   const matchClient = clientIdFromUrl ? getClientById(workspaceId, clientIdFromUrl) : null;
 
-  useEffect(() => {
-    if (workspaceId && canSeeOtherPortfolios) {
-      fetch("/api/team/list")
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.members) setTeamMembers(data.members);
-        })
-        .catch(() => setTeamMembers([]));
-    } else {
-      setTeamMembers([]);
-    }
-  }, [workspaceId, canSeeOtherPortfolios]);
-
-  useEffect(() => {
-    void loadProperties();
-  }, [loadProperties]);
-
-  useEffect(() => {
-    filterProperties();
-  }, [filterProperties]);
-
-  useEffect(() => {
-    if (viewIdFromUrl && properties.length > 0) {
-      const prop = properties.find((p) => p.id === viewIdFromUrl);
-      if (prop) {
-        setSelectedProperty(prop);
-        setIsViewOpen(true);
-      }
-    }
-  }, [viewIdFromUrl, properties]);
-
   const loadProperties = useCallback(async () => {
     if (workspaceId) {
       try {
@@ -212,6 +181,37 @@ export default function PropertiesPage() {
 
     setFilteredProperties(filtered);
   }, [properties, searchQuery, statusFilter, typeFilter, matchClient]);
+
+  useEffect(() => {
+    if (workspaceId && canSeeOtherPortfolios) {
+      fetch("/api/team/list")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.members) setTeamMembers(data.members);
+        })
+        .catch(() => setTeamMembers([]));
+    } else {
+      setTeamMembers([]);
+    }
+  }, [workspaceId, canSeeOtherPortfolios]);
+
+  useEffect(() => {
+    void loadProperties();
+  }, [loadProperties]);
+
+  useEffect(() => {
+    filterProperties();
+  }, [filterProperties]);
+
+  useEffect(() => {
+    if (viewIdFromUrl && properties.length > 0) {
+      const prop = properties.find((p) => p.id === viewIdFromUrl);
+      if (prop) {
+        setSelectedProperty(prop);
+        setIsViewOpen(true);
+      }
+    }
+  }, [viewIdFromUrl, properties]);
 
   const handleAdd = () => {
     setSelectedProperty(null);

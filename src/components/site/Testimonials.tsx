@@ -41,7 +41,7 @@ export function Testimonials(props: TestimonialsProps) {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <p className="text-lg italic leading-relaxed text-site-foreground">"{item.quote}"</p>
+              <p className={'"text-lg italic leading-relaxed text-site-foreground"'}>"{item.quote}"</p>
               <footer className="mt-grid-4">
                 <p className="font-semibold text-site-foreground">{item.author}</p>
                 {item.role ? <p className="text-sm text-site-muted-foreground">{item.role}</p> : null}

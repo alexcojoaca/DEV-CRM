@@ -75,6 +75,16 @@ function fromApiProperty(p: { createdAt?: string; updatedAt?: string; [key: stri
     updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
   } as Property;
 }
+
+function getPropertyAddress(p: Property): string {
+  const parts = [
+    (p.street ?? "").trim(),
+    (p.number ?? "").trim(),
+    (p.zone ?? "").trim(),
+    ((p.city || p.county) ?? "").trim(),
+  ].filter(Boolean);
+  return parts.join(", ");
+}
 import { getClientById } from "@/features/clients/clientMockData";
 import { useSession } from "@/features/session/useSession";
 
@@ -139,7 +149,7 @@ export default function PropertiesPage() {
       filtered = filtered.filter(
         (p) =>
           p.title.toLowerCase().includes(query) ||
-          (p.address && p.address.toLowerCase().includes(query)) ||
+          getPropertyAddress(p).toLowerCase().includes(query) ||
           (p.city && p.city.toLowerCase().includes(query)) ||
           (p.street && p.street.toLowerCase().includes(query)) ||
           (p.county && p.county.toLowerCase().includes(query)) ||
@@ -251,7 +261,6 @@ export default function PropertiesPage() {
   const handleSave = async (data: PropertyFormData) => {
     const propertyData: PropertyFormData = {
       ...data,
-      address: data.street && data.number ? `${data.street} ${data.number}` : data.address || "",
       city: data.city || data.county || "",
     };
     const imagesToUpload = propertyData.images ?? [];

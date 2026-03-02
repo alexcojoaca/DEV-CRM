@@ -11,6 +11,15 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const secret = process.env.SESSION_SECRET;
+    if (!secret || secret.length < 32) {
+      console.error("Login: SESSION_SECRET is missing or too short (min 32 characters). Set it in Vercel → Project → Settings → Environment Variables.");
+      return NextResponse.json(
+        { error: "Autentificarea nu este configurată pe server. Administrator: adaugă SESSION_SECRET (min. 32 caractere) în variabilele de mediu (ex. Vercel)." },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) {

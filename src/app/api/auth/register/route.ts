@@ -11,6 +11,14 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    if (!process.env.DATABASE_URL) {
+      console.error("Register: DATABASE_URL is not set. Set it in Vercel → Project → Settings → Environment Variables.");
+      return NextResponse.json(
+        { error: "Baza de date nu este configurată. Administrator: adaugă DATABASE_URL în variabilele de mediu (ex. Vercel)." },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const parsed = bodySchema.safeParse(body);
     if (!parsed.success) {

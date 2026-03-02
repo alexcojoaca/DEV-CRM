@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PropertyCard } from "@/components/properties/PropertyCard";
@@ -117,12 +117,12 @@ export default function PropertiesPage() {
   }, [workspaceId, canSeeOtherPortfolios]);
 
   useEffect(() => {
-    loadProperties();
-  }, [workspaceId, portfolioMemberId, user?.id]);
+    void loadProperties();
+  }, [loadProperties]);
 
   useEffect(() => {
     filterProperties();
-  }, [properties, searchQuery, statusFilter, typeFilter, clientIdFromUrl, matchClient]);
+  }, [filterProperties]);
 
   useEffect(() => {
     if (viewIdFromUrl && properties.length > 0) {
@@ -134,7 +134,7 @@ export default function PropertiesPage() {
     }
   }, [viewIdFromUrl, properties]);
 
-  const loadProperties = async () => {
+  const loadProperties = useCallback(async () => {
     if (workspaceId) {
       try {
         const createdBy = portfolioMemberId ?? user?.id ?? "";
@@ -161,9 +161,9 @@ export default function PropertiesPage() {
       const payload = { ...p, createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt, updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt };
       fetch("/api/prezentare", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(() => {});
     });
-  };
+  }, [workspaceId, portfolioMemberId, user?.id]);
 
-  const filterProperties = () => {
+  const filterProperties = useCallback(() => {
     let filtered = [...properties];
 
     // Search filter
@@ -213,7 +213,7 @@ export default function PropertiesPage() {
     }
 
     setFilteredProperties(filtered);
-  };
+  }, [properties, searchQuery, statusFilter, typeFilter, matchClient]);
 
   const handleAdd = () => {
     setSelectedProperty(null);

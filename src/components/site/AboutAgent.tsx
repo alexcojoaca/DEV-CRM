@@ -34,6 +34,7 @@ export function AboutAgent({
           >
             <div className="aspect-[3/4] overflow-hidden rounded-site-radius shadow-site-lg">
               {imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={imageUrl} alt={name} className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-site-muted text-site-muted-foreground">

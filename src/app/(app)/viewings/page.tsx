@@ -87,7 +87,7 @@ export default function ViewingsPage() {
       setSelectedId(null);
       setViewMode("add");
     }
-  }, [searchParams]);
+  }, [searchParams, workspaceId]);
 
   useEffect(() => {
     const list = getViewings(workspaceId);
@@ -130,7 +130,7 @@ export default function ViewingsPage() {
       });
     }
     setFiltered(list);
-  }, [viewings, search, statusFilter, dateFilter]);
+  }, [viewings, search, statusFilter, dateFilter, workspaceId]);
 
   const selectedViewing = selectedId ? viewings.find((v) => v.id === selectedId) ?? null : null;
   const selectedProperty = selectedViewing?.propertyId

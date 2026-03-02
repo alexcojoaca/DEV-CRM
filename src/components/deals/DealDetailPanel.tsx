@@ -438,6 +438,7 @@ export function DealDetailPanel({ workspaceId, deal, onDealUpdated, onDealDelete
               >
                 {coverImage ? (
                   <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={coverImage} alt="" className="w-full h-full object-cover" />
                   </div>
                 ) : (

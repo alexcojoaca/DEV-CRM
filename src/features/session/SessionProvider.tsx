@@ -16,6 +16,7 @@ const SessionContext = createContext<SessionContextValue | undefined>(undefined)
 
 export function SessionProvider({ children }: { children: ReactNode }) {
   const sessionData = useSession();
+  const { setSession } = sessionData;
 
   useEffect(() => {
     let cancelled = false;
@@ -40,14 +41,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               createdAt: "",
             },
           };
-          sessionData.setSession(mapped);
+          setSession(mapped);
         } else {
-          sessionData.setSession(null);
+          setSession(null);
         }
       })
-      .catch(() => { if (!cancelled) sessionData.setSession(null); });
-    return () => { cancelled = true; };
-  }, []);
+      .catch(() => {
+        if (!cancelled) setSession(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [setSession]);
 
   return <SessionContext.Provider value={sessionData}>{children}</SessionContext.Provider>;
 }

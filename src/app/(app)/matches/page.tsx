@@ -446,6 +446,7 @@ export default function MatchesPage() {
                         />
                         <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-muted">
                           {cover ? (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={cover}
                               alt={property.title}

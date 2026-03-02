@@ -92,7 +92,7 @@ export function FisaVizionareInchiriereFullText({
         <p>Banca: {banca}</p>
         <p>Reprezentată legal prin: {reprezentat}</p>
         <p>Funcția: {functia}</p>
-        <p>Denumită în continuare „Prestatorul".</p>
+        <p>Denumită în continuare „Prestatorul”.</p>
         <p>Agent imobiliar: {agent}</p>
       </section>
 

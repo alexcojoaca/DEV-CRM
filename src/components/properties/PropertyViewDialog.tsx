@@ -214,6 +214,7 @@ export function PropertyViewDialog({ open, onOpenChange, property, workspaceId, 
                   onClick={() => setGalleryIndex(i)}
                 >
                   <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-muted mx-1">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={img.url || img.data}
                       alt={img.name || `Poza ${i + 1}`}
@@ -233,6 +234,7 @@ export function PropertyViewDialog({ open, onOpenChange, property, workspaceId, 
               className="hidden sm:block relative aspect-[16/10] w-full rounded-lg overflow-hidden bg-muted cursor-pointer"
               onClick={() => setGalleryIndex(carouselIndex)}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={images[carouselIndex].url || images[carouselIndex].data}
                 alt={images[carouselIndex].name || `Poza ${carouselIndex + 1}`}
@@ -305,6 +307,7 @@ export function PropertyViewDialog({ open, onOpenChange, property, workspaceId, 
                     </button>
                   </>
                 )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={images[galleryIndex].url || images[galleryIndex].data}
                   alt=""

@@ -109,6 +109,7 @@ export default function PropertyDetailPage() {
             >
               <div className="relative aspect-[16/10] bg-site-muted">
                 {images[imageIndex]?.data ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={images[imageIndex].data}
                     alt={property.title}

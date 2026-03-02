@@ -239,6 +239,7 @@ export function PropertyImageUploader({
                   dragOverIndex === index && "ring-2 ring-purple-500 ring-offset-2"
                 )}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={img.url || img.data}
                   alt={img.name}

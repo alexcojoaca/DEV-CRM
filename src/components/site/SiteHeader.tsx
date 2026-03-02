@@ -46,6 +46,7 @@ export function SiteHeader({
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-grid-4 px-grid-4 py-grid-3 sm:px-grid-6">
         <Link href="/p" className="flex items-center gap-2 shrink-0">
           {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt={agencyName} className="h-9 max-w-[160px] object-contain" />
           ) : (
             <span className="text-xl font-semibold text-site-foreground">{agencyName}</span>

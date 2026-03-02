@@ -183,6 +183,7 @@ export default function PrezentarePage() {
             {/* Desktop: carusel cu săgeți */}
             <div className="hidden sm:block max-w-5xl mx-auto">
               <div className="relative rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 shadow-2xl aspect-[16/10]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <motion.img
                   key={imageIndex}
                   initial={{ opacity: 0 }}
@@ -230,6 +231,7 @@ export default function PrezentarePage() {
                 >
                   <div className="rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 shadow-xl">
                     <div className="aspect-[4/3] relative">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={typeof img === "object" && img?.data ? img.data : ""}
                         alt={data.title || `Imagine ${i + 1}`}

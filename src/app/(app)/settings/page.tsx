@@ -279,6 +279,7 @@ export default function SettingsPage() {
               {agent.semnatura_dataurl && (
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-sm text-green-600">Semnătură salvată</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={agent.semnatura_dataurl}
                     alt="Semnătură"

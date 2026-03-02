@@ -38,6 +38,7 @@ export function Hero({
     >
       <div className="absolute inset-0">
         {backgroundImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={backgroundImage}
             alt=""

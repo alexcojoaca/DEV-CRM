@@ -141,7 +141,7 @@ export function PropertyCard({ property, workspaceId, onEdit, onDelete, onView }
       {/* Imagine: pe mobil deasupra (full width), de la sm în stânga (lățime fixă) */}
       <div className="relative w-full h-48 sm:w-64 sm:h-44 sm:shrink-0 bg-gradient-to-br from-purple-200 via-pink-200 to-purple-300 overflow-hidden">
         {(property.images?.[0]?.url || property.images?.[0]?.data) ? (
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={property.images[0].url || property.images[0].data}
             alt={property.title}

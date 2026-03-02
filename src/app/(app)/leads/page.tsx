@@ -11,6 +11,7 @@ import { getLeads, addLead, updateLead, deleteLead, getLeadById } from "@/featur
 import type { Lead, LeadFormData } from "@/features/leads/leadTypes";
 import { Plus, Search, ArrowLeft, Trash2, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/features/session/useSession";
 
 type PanelMode = "empty" | "add" | "edit";
 

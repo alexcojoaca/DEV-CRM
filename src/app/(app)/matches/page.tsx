@@ -428,7 +428,7 @@ export default function MatchesPage() {
                 </p>
               ) : (
                 <div className="space-y-2">
-                  {currentMatches.map((property) => {
+                  {(currentMatches as Property[]).map((property) => {
                     const cover =
                       property.images && property.images.length
                         ? normalizePropertyImages(property.images)[0]?.data

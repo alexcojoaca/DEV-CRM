@@ -167,14 +167,14 @@ export default function PropertiesPage() {
       filtered = filtered.filter((p) => p.type === typeFilter);
     }
 
-    // Client match filter: when opened from "Potrivește proprietăți", filter by client zones/budget/rooms
+    // Client match filter: when opened from "Potrivește proprietăți", filter by client zone/budget/rooms
     if (matchClient) {
-      const clientZones = matchClient.zones ?? matchClient.qualification?.preferredZones ?? [];
+      const clientZone = matchClient.zone?.trim();
       const budgetMin = matchClient.budgetMin;
-      const budgetMax = matchClient.budgetMax ?? matchClient.qualification?.budgetMax;
-      const roomsMin = matchClient.roomsMin ?? matchClient.qualification?.minRooms;
-      if (clientZones.length > 0) {
-        filtered = filtered.filter((p) => p.zone && clientZones.some((z) => z.toLowerCase() === (p.zone ?? "").toLowerCase()));
+      const budgetMax = matchClient.budgetMax;
+      const roomsMin = matchClient.roomsMin;
+      if (clientZone) {
+        filtered = filtered.filter((p) => p.zone && p.zone.toLowerCase() === clientZone.toLowerCase());
       }
       if (budgetMin != null || budgetMax != null) {
         filtered = filtered.filter((p) => {
@@ -341,9 +341,9 @@ export default function PropertiesPage() {
       {matchClient && (
         <div className="rounded-xl border border-purple-200 bg-purple-50/50 px-4 py-3 text-sm text-purple-800">
           <span className="font-medium">Proprietăți potrivite pentru {matchClient.name}</span>
-          {(matchClient.zones?.length ?? 0) > 0 && (
+          {matchClient.zone && (
             <span className="ml-1 text-purple-600">
-              (zone: {matchClient.zones?.join(", ") ?? ""})
+              (zonă: {matchClient.zone})
             </span>
           )}
         </div>

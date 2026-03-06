@@ -41,7 +41,7 @@ import { phoneForWhatsApp } from "@/components/clients/ClientListItem";
 import { getClientById } from "@/features/clients/clientMockData";
 import { getProperties, getPropertyById } from "@/features/properties/propertyMockData";
 import { normalizePropertyImages } from "@/features/properties/propertyTypes";
-import { updateDeal, addOfferToDeal, deleteDeal } from "@/features/deals/dealMockData";
+import { deleteDeal, updateDeal, addOfferToDeal } from "@/features/deals/dealMockData";
 import { cn } from "@/lib/utils";
 
 function openCall(phone: string) {

@@ -1,36 +1,11 @@
 "use client";
 
 import type { Viewing } from "./viewingTypes";
+import { createWorkspaceLocalStorage } from "@/features/storage/workspaceLocalStorage";
 
-const STORAGE_KEY_PREFIX = "crm_viewings_";
-
-function reviver(_key: string, value: unknown): unknown {
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
-  }
-  return value;
-}
-
-function loadFromStorage(workspaceId: string | null): Viewing[] {
-  if (typeof window === "undefined" || !workspaceId) return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + workspaceId);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw, reviver) as Viewing[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(workspaceId: string | null, list: Viewing[]) {
-  if (typeof window === "undefined" || !workspaceId) return;
-  try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + workspaceId, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
-}
+const { load: loadFromStorage, save: saveToStorage } = createWorkspaceLocalStorage<Viewing>({
+  prefix: "crm_viewings_",
+});
 
 export function getViewings(workspaceId: string | null): Viewing[] {
   const store = loadFromStorage(workspaceId);

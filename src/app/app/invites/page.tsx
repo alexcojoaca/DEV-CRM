@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { refreshSession } from "@/features/session/refreshSession";
 
 interface InviteItem {
   id: string;
@@ -34,10 +35,10 @@ export default function InvitesPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ inviteId }),
     });
-    if (res.ok) {
-      setInvites((prev) => prev.filter((i) => i.id !== inviteId));
-      router.refresh();
-    }
+    if (!res.ok) return;
+    setInvites((prev) => prev.filter((i) => i.id !== inviteId));
+    refreshSession();
+    router.refresh();
   };
 
   if (loading) return <div className="p-4">Se încarcă…</div>;

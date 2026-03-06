@@ -1,36 +1,11 @@
 "use client";
 
 import type { Lead, LeadFormData } from "./leadTypes";
+import { createWorkspaceLocalStorage } from "@/features/storage/workspaceLocalStorage";
 
-const STORAGE_KEY_PREFIX = "crm_leads_";
-
-function reviver(_key: string, value: unknown): unknown {
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
-  }
-  return value;
-}
-
-function loadFromStorage(workspaceId: string | null): Lead[] {
-  if (typeof window === "undefined" || !workspaceId) return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + workspaceId);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw, reviver) as Lead[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(workspaceId: string | null, list: Lead[]) {
-  if (typeof window === "undefined" || !workspaceId) return;
-  try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + workspaceId, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
-}
+const { load: loadFromStorage, save: saveToStorage } = createWorkspaceLocalStorage<Lead>({
+  prefix: "crm_leads_",
+});
 
 export function getLeads(workspaceId: string | null): Lead[] {
   const leadsStore = loadFromStorage(workspaceId);

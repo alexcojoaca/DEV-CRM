@@ -99,6 +99,74 @@ export type DealFormData = Omit<
   events?: DealEvent[];
 };
 
+export interface DealApiDto {
+  id: string;
+  title?: string;
+  clientId?: string;
+  clientNameFree?: string;
+  clientPhoneFree?: string;
+  clientEmailFree?: string;
+  transactionType: DealTransactionType;
+  side: DealSide;
+  status: DealStatus;
+  mainPropertyId?: string;
+  mainPropertyTitle?: string;
+  mainPropertyPrice?: number;
+  offersJson?: unknown;
+  matchedPropertiesJson?: unknown;
+  documentsJson?: unknown;
+  checklistJson?: unknown;
+  eventsJson?: unknown;
+  notes?: string;
+  commissionPercent?: number;
+  commissionReceivedTotal?: number;
+  listingPrice?: number;
+  delistPrice?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function dealFromApi(dto: DealApiDto): Deal {
+  const offers = (dto.offersJson as DealOffer[] | undefined) ?? [];
+  const matches = (dto.matchedPropertiesJson as DealPropertyMatch[] | undefined) ?? [];
+  const documents = (dto.documentsJson as DealDocumentAttachment[] | undefined) ?? [];
+  const checklist = (dto.checklistJson as DealChecklistItem[] | undefined) ?? [];
+  const events = (dto.eventsJson as DealEvent[] | undefined) ?? [];
+
+  return {
+    id: dto.id,
+    title: dto.title,
+    clientId: dto.clientId,
+    clientNameFree: dto.clientNameFree,
+    clientPhoneFree: dto.clientPhoneFree,
+    clientEmailFree: dto.clientEmailFree,
+    transactionType: dto.transactionType,
+    side: dto.side,
+    status: dto.status,
+    mainPropertyId: dto.mainPropertyId,
+    mainPropertyTitle: dto.mainPropertyTitle,
+    mainPropertyPrice: dto.mainPropertyPrice,
+    offers: offers.map((o) => ({
+      ...o,
+      createdAt: new Date(o.createdAt),
+    })),
+    commissionPercent: dto.commissionPercent,
+    commissionReceivedTotal: dto.commissionReceivedTotal,
+    listingPrice: dto.listingPrice,
+    delistPrice: dto.delistPrice,
+    matchedProperties: matches,
+    documents,
+    checklist,
+    events: events.map((e) => ({
+      ...e,
+      date: new Date(e.date),
+    })),
+    notes: dto.notes,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  };
+}
+
 export const DEAL_STATUS_LABELS: Record<DealStatus, string> = {
   in_progress: "În curs",
   negotiation: "În negociere",

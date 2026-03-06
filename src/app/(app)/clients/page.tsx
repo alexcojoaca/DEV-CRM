@@ -15,16 +15,8 @@ import { ClientListItem } from "@/components/clients/ClientListItem";
 import { ClientForm } from "@/components/clients/ClientForm";
 import { ClientDetailPanel } from "@/components/clients/ClientDetailPanel";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  getClients,
-  addClient,
-  updateClient,
-  deleteClient,
-  getClientById,
-} from "@/features/clients/clientMockData";
 import type { Client, ClientFormData } from "@/features/clients/clientTypes";
-import { FOLLOW_UP_DAYS, MAX_FOLLOW_UPS } from "@/features/clients/clientTypes";
-import { STATUS_OPTIONS, TRANSACTION_TYPE_OPTIONS } from "@/features/clients/clientTypes";
+import { FOLLOW_UP_DAYS, MAX_FOLLOW_UPS, STATUS_OPTIONS, TRANSACTION_TYPE_OPTIONS, clientFromApi } from "@/features/clients/clientTypes";
 import { Plus, Search, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/features/session/useSession";
@@ -56,8 +48,22 @@ function ClientsPageContent() {
   const [panelMode, setPanelMode] = useState<PanelMode>("empty");
   const [isDesktop, setIsDesktop] = useState(false);
 
-  const loadClients = useCallback(() => {
-    setClients(getClients(workspaceId));
+  const loadClients = useCallback(async () => {
+    if (!workspaceId) {
+      setClients([]);
+      return;
+    }
+    try {
+      const res = await fetch("/api/clients", { credentials: "include" });
+      if (!res.ok) {
+        setClients([]);
+        return;
+      }
+      const data = (await res.json()) as import("@/features/clients/clientTypes").ClientApiDto[];
+      setClients(data.map(clientFromApi));
+    } catch {
+      setClients([]);
+    }
   }, [workspaceId]);
 
   useEffect(() => {
@@ -105,7 +111,7 @@ function ClientsPageContent() {
     return true;
   });
 
-  const selected = selectedId ? getClientById(workspaceId, selectedId) : null;
+  const selected = selectedId ? clients.find((c) => c.id === selectedId) ?? null : null;
 
   const showFollowUpNotification =
     selected?.lastContactedAt &&
@@ -114,62 +120,111 @@ function ClientsPageContent() {
     Date.now() - new Date(selected.lastContactedAt).getTime() >= FOLLOW_UP_MS;
 
   const handleSaveNew = (data: ClientFormData) => {
-    addClient(workspaceId, data);
-    loadClients();
-    setPanelMode("empty");
-    setSelectedId(null);
+    if (!workspaceId) return;
+    void (async () => {
+      const res = await fetch("/api/clients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) return;
+      await loadClients();
+      setPanelMode("empty");
+      setSelectedId(null);
+    })();
   };
 
   const handleSaveEdit = (data: ClientFormData) => {
-    if (!selectedId) return;
-    updateClient(workspaceId, selectedId, data);
-    loadClients();
-    setPanelMode("view");
-    if (selected) setClients((prev) => prev.map((c) => (c.id === selectedId ? { ...getClientById(workspaceId, selectedId)! } : c)));
+    if (!selectedId || !workspaceId) return;
+    void (async () => {
+      const res = await fetch(`/api/clients/${selectedId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) return;
+      await loadClients();
+      setPanelMode("view");
+    })();
   };
 
   const handleContactedNow = () => {
-    if (!selectedId) return;
-    const client = getClientById(workspaceId, selectedId);
+    if (!selectedId || !workspaceId) return;
+    const client = clients.find((c) => c.id === selectedId);
     const count = client?.followUpCount ?? 0;
-    updateClient(workspaceId, selectedId, {
-      lastContactedAt: new Date(),
-      followUpCount: count + 1,
-    });
-    loadClients();
+    void (async () => {
+      const res = await fetch(`/api/clients/${selectedId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          lastContactedAt: new Date().toISOString(),
+          followUpCount: count + 1,
+        }),
+      });
+      if (!res.ok) return;
+      await loadClients();
+    })();
   };
 
   const handleCall = (phone: string, clientId: string) => {
-    const client = getClientById(workspaceId, clientId);
+    if (!workspaceId) return;
+    const client = clients.find((c) => c.id === clientId);
     const count = client?.followUpCount ?? 0;
-    updateClient(workspaceId, clientId, {
-      lastContactedAt: new Date(),
-      followUpCount: count + 1,
-    });
-    loadClients();
-    openCall(phone);
+    void (async () => {
+      const res = await fetch(`/api/clients/${clientId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          lastContactedAt: new Date().toISOString(),
+          followUpCount: count + 1,
+        }),
+      });
+      if (!res.ok) return;
+      await loadClients();
+      openCall(phone);
+    })();
   };
 
   const handleWhatsApp = (phone: string, clientId: string) => {
-    const client = getClientById(workspaceId, clientId);
+    if (!workspaceId) return;
+    const client = clients.find((c) => c.id === clientId);
     const count = client?.followUpCount ?? 0;
-    updateClient(workspaceId, clientId, {
-      lastContactedAt: new Date(),
-      followUpCount: count + 1,
-    });
-    loadClients();
-    openWhatsApp(phone);
+    void (async () => {
+      const res = await fetch(`/api/clients/${clientId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          lastContactedAt: new Date().toISOString(),
+          followUpCount: count + 1,
+        }),
+      });
+      if (!res.ok) return;
+      await loadClients();
+      openWhatsApp(phone);
+    })();
   };
 
   const handleDelete = (clientId: string) => {
+    if (!workspaceId) return;
     const confirm = window.confirm("Sigur vrei să ștergi acest contact?");
     if (!confirm) return;
-    deleteClient(workspaceId, clientId);
-    loadClients();
-    if (selectedId === clientId) {
-      setSelectedId(null);
-      setPanelMode("empty");
-    }
+    void (async () => {
+      const res = await fetch(`/api/clients/${clientId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) return;
+      await loadClients();
+      if (selectedId === clientId) {
+        setSelectedId(null);
+        setPanelMode("empty");
+      }
+    })();
   };
 
   const isPanelOpen = panelMode !== "empty";

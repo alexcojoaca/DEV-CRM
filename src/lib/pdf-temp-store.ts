@@ -1,20 +1,33 @@
 /**
  * Store temporar pentru PDF-uri (pe disc), pentru descărcare forțată pe iOS.
- * Token-urile expiră după 2 minute. Funcționează între request-uri (același server sau același filesystem).
+ * Token-urile expiră după un TTL configurabil. Funcționează între request-uri (același server sau același filesystem).
  */
 
 import { readFile, writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
+import { randomBytes } from "crypto";
 
-const BASE = path.join(process.cwd(), "data", "temp-downloads");
-const TTL_MS = 2 * 60 * 1000; // 2 minute
+const BASE = process.env.PDF_TEMP_DOWNLOAD_DIR
+  ? path.resolve(process.env.PDF_TEMP_DOWNLOAD_DIR)
+  : path.join(process.cwd(), "data", "temp-downloads");
+
+// TTL configurabil (în milisecunde) prin env PDF_TEMP_DOWNLOAD_TTL_MS; default 2 minute.
+const DEFAULT_TTL_MS = 2 * 60 * 1000;
+const TTL_MS = (() => {
+  const raw = process.env.PDF_TEMP_DOWNLOAD_TTL_MS;
+  if (!raw) return DEFAULT_TTL_MS;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TTL_MS;
+})();
+
 const TOKEN_LENGTH = 32;
 
 function randomToken(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  const bytes = randomBytes(TOKEN_LENGTH);
   let t = "";
   for (let i = 0; i < TOKEN_LENGTH; i++) {
-    t += chars[Math.floor(Math.random() * chars.length)];
+    t += chars[bytes[i] % chars.length];
   }
   return t;
 }

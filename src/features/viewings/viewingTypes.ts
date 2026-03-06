@@ -31,6 +31,46 @@ export interface Viewing {
 
 export type ViewingFormData = Omit<Viewing, "id" | "createdAt" | "updatedAt">;
 
+export interface ViewingApiDto {
+  id: string;
+  propertyId?: string;
+  clientId?: string;
+  dealId?: string;
+  propertyNameFree?: string | null;
+  clientNameFree?: string | null;
+  clientPhoneFree?: string | null;
+  viewingType?: "sale" | "rent" | null;
+  address?: string | null;
+  ownerName?: string | null;
+  ownerPhone?: string | null;
+  scheduledAt?: string | null;
+  status: ViewingStatus;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function viewingFromApi(dto: ViewingApiDto): Viewing {
+  return {
+    id: dto.id,
+    propertyId: dto.propertyId ?? undefined,
+    clientId: dto.clientId ?? undefined,
+    dealId: dto.dealId ?? undefined,
+    propertyNameFree: dto.propertyNameFree ?? undefined,
+    clientNameFree: dto.clientNameFree ?? undefined,
+    clientPhoneFree: dto.clientPhoneFree ?? undefined,
+    viewingType: (dto.viewingType ?? undefined) as Viewing["viewingType"],
+    address: dto.address ?? undefined,
+    ownerName: dto.ownerName ?? undefined,
+    ownerPhone: dto.ownerPhone ?? undefined,
+    scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
+    status: dto.status,
+    notes: dto.notes ?? undefined,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  };
+}
+
 export const VIEWING_STATUS_LABELS: Record<ViewingStatus, string> = {
   scheduled: "Programat",
   completed: "Efectuat",

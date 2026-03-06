@@ -12,6 +12,7 @@ import {
 import { useSession } from "@/features/session/useSession";
 import { User, LogOut, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { refreshSession } from "@/features/session/refreshSession";
 
 const roleTranslations: Record<string, string> = {
   OWNER: "Proprietar",
@@ -25,6 +26,7 @@ export function Topbar() {
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
+    refreshSession();
     router.push("/auth/login");
     router.refresh();
   }

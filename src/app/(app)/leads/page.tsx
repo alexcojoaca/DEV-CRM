@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { LeadListItem } from "@/components/leads/LeadListItem";
 import { EmptyState } from "@/components/common/EmptyState";
-import { getLeads, addLead, updateLead, deleteLead, getLeadById } from "@/features/leads/leadMockData";
 import type { Lead, LeadFormData } from "@/features/leads/leadTypes";
+import { leadFromApi } from "@/features/leads/leadTypes";
 import { Plus, Search, ArrowLeft, Trash2, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/features/session/useSession";
@@ -32,8 +32,22 @@ export default function LeadsPage() {
     notes: "",
   });
 
-  const loadLeads = useCallback(() => {
-    setLeads(getLeads(workspaceId));
+  const loadLeads = useCallback(async () => {
+    if (!workspaceId) {
+      setLeads([]);
+      return;
+    }
+    try {
+      const res = await fetch("/api/leads", { credentials: "include" });
+      if (!res.ok) {
+        setLeads([]);
+        return;
+      }
+      const data = (await res.json()) as import("@/features/leads/leadTypes").LeadApiDto[];
+      setLeads(data.map(leadFromApi));
+    } catch {
+      setLeads([]);
+    }
   }, [workspaceId]);
 
   useEffect(() => {
@@ -64,7 +78,7 @@ export default function LeadsPage() {
     return matchName || matchPhone || matchLocation;
   });
 
-  const selected = selectedId ? getLeadById(workspaceId, selectedId) : null;
+  const selected = selectedId ? leads.find((l) => l.id === selectedId) ?? null : null;
 
   const resetForm = () => {
     setForm({
@@ -94,11 +108,17 @@ export default function LeadsPage() {
 
   const handleDelete = () => {
     if (!selectedId) return;
-    deleteLead(workspaceId, selectedId);
-    loadLeads();
-    setSelectedId(null);
-    resetForm();
-    setPanelMode("empty");
+    if (!workspaceId) {
+      return;
+    }
+    void (async () => {
+      const res = await fetch(`/api/leads/${selectedId}`, { method: "DELETE", credentials: "include" });
+      if (!res.ok) return;
+      await loadLeads();
+      setSelectedId(null);
+      resetForm();
+      setPanelMode("empty");
+    })();
   };
 
   const handleSave = () => {
@@ -110,16 +130,31 @@ export default function LeadsPage() {
     };
     if (!payload.name && !payload.phone) return;
 
-    if (panelMode === "add") {
-      const added = addLead(workspaceId, payload);
-      if (!added) return;
-    } else if (panelMode === "edit" && selectedId) {
-      updateLead(workspaceId, selectedId, payload);
-    }
-    loadLeads();
-    setPanelMode("empty");
-    setSelectedId(null);
-    resetForm();
+    if (!workspaceId) return;
+
+    void (async () => {
+      if (panelMode === "add") {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) return;
+      } else if (panelMode === "edit" && selectedId) {
+        const res = await fetch(`/api/leads/${selectedId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) return;
+      }
+      await loadLeads();
+      setPanelMode("empty");
+      setSelectedId(null);
+      resetForm();
+    })();
   };
 
   const isPanelOpen = panelMode !== "empty";

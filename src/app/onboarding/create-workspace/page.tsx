@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { refreshSession } from "@/features/session/refreshSession";
 
 export default function CreateWorkspacePage() {
   const router = useRouter();
@@ -27,11 +28,16 @@ export default function CreateWorkspacePage() {
         setError(data.error || "Failed to create workspace");
         return;
       }
-      await fetch("/api/workspaces/set-active", {
+      const setActiveRes = await fetch("/api/workspaces/set-active", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workspaceId: data.id }),
       });
+      if (!setActiveRes.ok) {
+        setError("Failed to set active workspace");
+        return;
+      }
+      refreshSession();
       router.push("/dashboard");
       router.refresh();
     } catch {

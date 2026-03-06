@@ -1,46 +1,33 @@
 "use client";
 
 import type { Task } from "./taskTypes";
+import { createWorkspaceLocalStorage } from "@/features/storage/workspaceLocalStorage";
 
-const STORAGE_KEY = "crm_tasks";
+const { load: loadFromStorage, save: saveToStorage } = createWorkspaceLocalStorage<Task>({
+  prefix: "crm_tasks_",
+  noWorkspaceKey: "crm_tasks_no_workspace",
+  legacyGlobalKey: "crm_tasks",
+});
 
-function reviver(_key: string, value: unknown): unknown {
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
-  }
-  return value;
+let currentWorkspaceId: string | null = null;
+let tasksStore: Task[] = [];
+
+function ensureLoaded(workspaceId: string | null) {
+  const key = workspaceId ?? null;
+  if (currentWorkspaceId === key && tasksStore.length) return;
+  currentWorkspaceId = key;
+  tasksStore = loadFromStorage(workspaceId);
 }
 
-function loadFromStorage(): Task[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw, reviver) as Task[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(list: Task[]) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
-}
-
-let tasksStore: Task[] = loadFromStorage();
-
-export function getTasks(): Task[] {
+export function getTasks(workspaceId: string | null): Task[] {
+  ensureLoaded(workspaceId);
   return [...tasksStore].sort(
     (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
   );
 }
 
-export function addTask(data: Omit<Task, "id" | "createdAt" | "updatedAt">): Task {
+export function addTask(workspaceId: string | null, data: Omit<Task, "id" | "createdAt" | "updatedAt">): Task {
+  ensureLoaded(workspaceId);
   const now = new Date();
   const task: Task = {
     ...data,
@@ -49,11 +36,12 @@ export function addTask(data: Omit<Task, "id" | "createdAt" | "updatedAt">): Tas
     updatedAt: now,
   };
   tasksStore.push(task);
-  saveToStorage(tasksStore);
+  saveToStorage(workspaceId, tasksStore);
   return task;
 }
 
-export function updateTask(id: string, updates: Partial<Task>): Task | null {
+export function updateTask(workspaceId: string | null, id: string, updates: Partial<Task>): Task | null {
+  ensureLoaded(workspaceId);
   const index = tasksStore.findIndex((t) => t.id === id);
   if (index === -1) return null;
   tasksStore[index] = {
@@ -61,27 +49,30 @@ export function updateTask(id: string, updates: Partial<Task>): Task | null {
     ...updates,
     updatedAt: new Date(),
   };
-  saveToStorage(tasksStore);
+  saveToStorage(workspaceId, tasksStore);
   return tasksStore[index];
 }
 
-export function deleteTask(id: string): boolean {
+export function deleteTask(workspaceId: string | null, id: string): boolean {
+  ensureLoaded(workspaceId);
   const index = tasksStore.findIndex((t) => t.id === id);
   if (index === -1) return false;
   tasksStore.splice(index, 1);
-  saveToStorage(tasksStore);
+  saveToStorage(workspaceId, tasksStore);
   return true;
 }
 
-export function getTaskById(id: string): Task | null {
+export function getTaskById(workspaceId: string | null, id: string): Task | null {
+  ensureLoaded(workspaceId);
   return tasksStore.find((t) => t.id === id) ?? null;
 }
 
-export function toggleTaskCompleted(id: string): Task | null {
+export function toggleTaskCompleted(workspaceId: string | null, id: string): Task | null {
+  ensureLoaded(workspaceId);
   const task = tasksStore.find((t) => t.id === id);
   if (!task) return null;
   task.completed = !task.completed;
   task.updatedAt = new Date();
-  saveToStorage(tasksStore);
+  saveToStorage(workspaceId, tasksStore);
   return task;
 }

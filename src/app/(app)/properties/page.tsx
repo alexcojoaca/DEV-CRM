@@ -123,10 +123,6 @@ function PropertiesPageContent() {
         }
         const list = (await res.json()) as Array<{ createdAt?: string; updatedAt?: string; [key: string]: unknown }>;
         setProperties(list.map(fromApiProperty));
-        list.forEach((p) => {
-          const payload = { ...p, createdAt: p.createdAt ?? new Date().toISOString(), updatedAt: p.updatedAt ?? new Date().toISOString() };
-          fetch("/api/prezentare", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(() => {});
-        });
       } catch {
         setProperties([]);
       }
@@ -134,10 +130,6 @@ function PropertiesPageContent() {
     }
     const list = getProperties(workspaceId);
     setProperties([...list]);
-    list.forEach((p) => {
-      const payload = { ...p, createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt, updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt };
-      fetch("/api/prezentare", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(() => {});
-    });
   }, [workspaceId, portfolioMemberId, user?.id]);
 
   const filterProperties = useCallback(() => {

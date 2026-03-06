@@ -15,10 +15,30 @@ const DATA_DIR = path.join(process.cwd(), "data");
 const FILE_PATH = path.join(DATA_DIR, "prezentare-store.json");
 
 let loaded = false;
+let fsAvailable: boolean | null = null;
+
+function canUseFs(): boolean {
+  if (fsAvailable !== null) return fsAvailable;
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    const testPath = path.join(DATA_DIR, ".prezentare-store-test");
+    fs.writeFileSync(testPath, "ok", "utf-8");
+    fs.unlinkSync(testPath);
+    fsAvailable = true;
+  } catch (e) {
+    console.warn(
+      "prezentare-store: filesystem not available; falling back to in-memory store only. Links may not survive server restarts or serverless cold starts.",
+      e
+    );
+    fsAvailable = false;
+  }
+  return fsAvailable;
+}
 
 function loadFromFile(): void {
   if (loaded) return;
   loaded = true;
+  if (!canUseFs()) return;
   try {
     const raw = fs.readFileSync(FILE_PATH, "utf-8");
     const obj = JSON.parse(raw) as Record<string, PresentationProperty>;
@@ -31,6 +51,7 @@ function loadFromFile(): void {
 }
 
 function saveToFile(): void {
+  if (!canUseFs()) return;
   try {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     const obj = Object.fromEntries(store);

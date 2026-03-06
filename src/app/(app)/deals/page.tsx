@@ -13,13 +13,8 @@ import {
 import { DealListItem } from "@/components/deals/DealListItem";
 import { DealDetailPanel } from "@/components/deals/DealDetailPanel";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  getDeals,
-  addDeal,
-  getDealById,
-} from "@/features/deals/dealMockData";
 import type { DealFormData } from "@/features/deals/dealTypes";
-import { DEAL_STATUS_OPTIONS, DEAL_TRANSACTION_TYPE_OPTIONS } from "@/features/deals/dealTypes";
+import { DEAL_STATUS_OPTIONS, DEAL_TRANSACTION_TYPE_OPTIONS, dealFromApi } from "@/features/deals/dealTypes";
 import { getClients, getClientById } from "@/features/clients/clientMockData";
 import { Plus, Search, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -39,8 +34,22 @@ export default function DealsPage() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
 
-  const loadDeals = useCallback(() => {
-    setDeals(getDeals(workspaceId) as DealFormData[]);
+  const loadDeals = useCallback(async () => {
+    if (!workspaceId) {
+      setDeals([]);
+      return;
+    }
+    try {
+      const res = await fetch("/api/deals", { credentials: "include" });
+      if (!res.ok) {
+        setDeals([]);
+        return;
+      }
+      const data = await res.json();
+      setDeals((data as any[]).map((d) => dealFromApi(d)));
+    } catch {
+      setDeals([]);
+    }
   }, [workspaceId]);
 
   useEffect(() => {
@@ -56,8 +65,8 @@ export default function DealsPage() {
     return () => mq.removeEventListener("change", handleChange);
   }, []);
 
-  const allDeals = getDeals(workspaceId);
-  const filtered = allDeals.filter((d) => {
+  const allDeals = deals;
+  const filtered = deals.filter((d) => {
     const q = search.trim().toLowerCase();
     if (q) {
       const name = (d.clientNameFree || d.title || "").toLowerCase();
@@ -73,7 +82,7 @@ export default function DealsPage() {
     return true;
   });
 
-  const selectedDeal = selectedId ? getDealById(workspaceId, selectedId) : null;
+  const selectedDeal = selectedId ? deals.find((d) => d.id === selectedId) ?? null : null;
   const clients = getClients(workspaceId);
   const clientFiltered = clients.filter((c) => {
     const q = clientSearch.trim().toLowerCase();
@@ -94,23 +103,32 @@ export default function DealsPage() {
   const handleSelectClient = (clientId: string) => {
     const client = getClientById(workspaceId, clientId);
     if (!client) return;
-    const newDeal = addDeal(workspaceId, {
-      clientId: client.id,
-      clientNameFree: client.name,
-      clientPhoneFree: client.phone,
-      clientEmailFree: undefined,
-      transactionType: client.transactionType,
-      side: "buyer",
-      status: "in_progress",
-      offers: [],
-      matchedProperties: [],
-      documents: [],
-      checklist: [],
-    });
-    if (!newDeal) return;
-    setDeals(getDeals(workspaceId) as DealFormData[]);
-    setSelectedId(newDeal.id);
-    setPanelMode("view");
+    void (async () => {
+      const res = await fetch("/api/deals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          clientId: client.id,
+          clientNameFree: client.name,
+          clientPhoneFree: client.phone,
+          transactionType: client.transactionType,
+          side: "buyer",
+          status: "in_progress",
+          offers: [],
+          matchedProperties: [],
+          documents: [],
+          checklist: [],
+          events: [],
+        }),
+      });
+      if (!res.ok) return;
+      const json = await res.json();
+      const created = dealFromApi(json);
+      await loadDeals();
+      setSelectedId(created.id);
+      setPanelMode("view");
+    })();
   };
 
   const isPanelOpen = panelMode !== "empty";

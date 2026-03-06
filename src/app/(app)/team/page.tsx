@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useSession } from "@/features/session/useSession";
+import { refreshSession } from "@/features/session/refreshSession";
 import { canAccess } from "@/features/permissions/rbac";
 import { Plus, Mail, Clock, UserMinus, Crown, Shield, UserCheck, Inbox } from "lucide-react";
 
@@ -143,7 +144,7 @@ export default function TeamPage() {
       if (res.ok) {
         setReceivedInvites((prev) => prev.filter((i) => i.id !== inviteId));
         loadTeam();
-        window.dispatchEvent(new Event("session-refresh"));
+        refreshSession();
       }
     } catch {
       /* ignore */

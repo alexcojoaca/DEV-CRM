@@ -22,6 +22,43 @@ export interface Task {
 
 export type TaskFormData = Omit<Task, "id" | "createdAt" | "updatedAt">;
 
+export interface TaskApiDto {
+  id: string;
+  title: string;
+  description?: string | null;
+  dueDate: string;
+  completed: boolean;
+  priority: TaskPriority;
+  relatedEntityType?: TaskRelatedType;
+  relatedEntityId?: string;
+  relatedEntityName?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function taskFromApi(dto: TaskApiDto): Task {
+  const related: TaskRelated | undefined =
+    dto.relatedEntityType && dto.relatedEntityId
+      ? {
+          type: dto.relatedEntityType,
+          id: dto.relatedEntityId,
+          name: dto.relatedEntityName ?? "",
+        }
+      : undefined;
+
+  return {
+    id: dto.id,
+    title: dto.title,
+    description: dto.description ?? undefined,
+    dueDate: new Date(dto.dueDate),
+    completed: dto.completed,
+    priority: dto.priority,
+    relatedTo: related,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  };
+}
+
 export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
   low: "Scăzută",
   medium: "Medie",

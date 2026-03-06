@@ -49,12 +49,13 @@ The app will automatically redirect to `/dashboard`.
 
 ## Project Structure
 
-```
+```txt
 src/
   app/
-    (auth)/          # Auth-related pages
+    (auth)/                    # Auth-related pages
       login/
-    (app)/            # Main application pages (protected)
+      register/
+    (app)/                     # Main application pages (protected)
       dashboard/
       leads/
       clients/
@@ -66,16 +67,43 @@ src/
       team/
       reports/
       settings/
+    (public)/
+      prezentare/[token]/      # Public property presentations
+      s/v/[token]/             # Public signing flows (vânzare)
+      s/vi/[token]/            # Public signing flows (închiriere)
+    api/                       # Backend API routes (Prisma + RBAC)
   components/
-    layout/           # App shell, sidebar, topbar, etc.
-    common/           # Reusable components (KpiCard, EmptyState, etc.)
-    ui/               # shadcn/ui components
+    layout/                    # App shell, sidebar, topbar, etc.
+    common/                    # Reusable components (KpiCard, EmptyState, etc.)
+    ui/                        # shadcn/ui components
+    leads/
+    clients/
+    deals/
+    properties/
+    viewings/
+    tasks/
+    documents/
   features/
-    permissions/      # RBAC system
-    session/          # Session management (mock)
-    dashboard/        # Dashboard types and mock data
-  lib/                # Utilities
-  styles/             # Global styles and design tokens
+    auth/                      # Session types, JWT helpers
+    permissions/               # RBAC system
+    scoping.ts                 # requireAuth/requireMembership helpers
+    session/                   # Client-side session provider/hook
+    workspaces/                # Workspace hooks (useWorkspaceInfo, etc.)
+    dashboard/                 # Dashboard types and mock data
+    leads/                     # Lead types + API DTO mapping
+    clients/                   # Client types + API DTO mapping
+    deals/                     # Deal types + API DTO mapping
+    properties/                # Property types + API mapping
+    viewings/                  # Viewing types + API mapping
+    tasks/                     # Task types + API mapping
+    files/                     # File storage abstraction
+  lib/
+    prisma.ts                  # Prisma client
+    pdf-temp-store.ts          # Temporary PDF downloads (token-based)
+    prezentare-store.ts        # Property presentation store (FS + in-memory fallback)
+    extension-imports-store.ts # Browser-extension imports store (FS + in-memory fallback)
+    errors.ts                  # Custom error classes
+  styles/                      # Global styles and design tokens
 ```
 
 ## Design System
@@ -89,20 +117,15 @@ The design system uses CSS variables defined in `src/styles/tokens.css`:
 
 All components use Tailwind utilities and design tokens - no hardcoded colors or ad-hoc styling.
 
-## Authentication (Placeholder)
+## Authentication
 
-Currently, the app uses a mock session system. The session is provided via:
+The app uses a real session stored in an httpOnly cookie (JWT signed with `SESSION_SECRET`).
 
-- `src/features/session/mockSession.ts` - Mock session data
-- `src/features/session/useSession.ts` - Zustand hook for session
-- `src/features/session/SessionProvider.tsx` - React context provider
-
-**To connect real authentication:**
-
-1. Replace `mockSession.ts` with your auth provider (e.g., NextAuth, Clerk, Auth0)
-2. Update `useSession.ts` to fetch from your auth provider
-3. Add authentication middleware in `middleware.ts`
-4. Protect routes using Next.js middleware or route guards
+- `src/features/auth/types.ts` – `AppSession`, `SessionUser`, and membership types.
+- `src/features/auth/session.ts` – encode/decode session JWT, cookie helpers.
+- `src/features/session/useSession.ts` – client-side Zustand store for session (user + active workspace).
+- `src/features/session/SessionProvider.tsx` – fetches `/api/auth/session` and keeps the client session in sync (including a `session-refresh` event).
+- `src/middleware.ts` – protects `/app/*`, redirects to `/auth/login`, `/onboarding/create-workspace` or `/app/select-workspace` based on session and memberships.
 
 ## Permissions System
 
@@ -124,32 +147,21 @@ if (user && canAccess(user.role, "team:invite")) {
 }
 ```
 
-## Next Steps to Connect Backend
+## Backend Overview
 
-1. **Database Setup**:
-   - Set up your database (PostgreSQL, MySQL, etc.)
-   - Create schema for Organizations, Users, Leads, Deals, Properties, etc.
-   - Use Prisma, Drizzle, or your preferred ORM
+The backend is implemented with **Prisma + PostgreSQL** under `src/app/api/`. Core entities are multi-tenant and scoped by `workspaceId`:
 
-2. **API Routes**:
-   - Create API routes in `src/app/api/`
-   - Implement CRUD operations for each entity
-   - Add authentication middleware
+- **Leads**: `/api/leads`, `/api/leads/[id]`
+- **Clients**: `/api/clients`, `/api/clients/[id]`
+- **Deals**: `/api/deals`, `/api/deals/[id]`
+- **Properties**: `/api/properties`, `/api/properties/[id]`
+- **Viewings**: `/api/viewings`, `/api/viewings/[id]`
+- **Tasks**: `/api/tasks`, `/api/tasks/[id]`
 
-3. **Replace Mock Data**:
-   - Update `dashboardMockData.ts` to fetch from API
-   - Replace mock session with real auth
-   - Connect all placeholder pages to backend
+All routes use:
 
-4. **Add Real Features**:
-   - File upload for documents
-   - Email notifications for invites
-   - Calendar integration for viewings
-   - Reporting and analytics
-
-5. **Environment Variables**:
-   - Create `.env.local` for API keys, database URLs, etc.
-   - Add to `.gitignore`
+- `requireMembership()` for scoping to the active workspace.
+- `canAccessByAssignment` when a record has `assignedToUserId`.
 
 ## Available Scripts
 

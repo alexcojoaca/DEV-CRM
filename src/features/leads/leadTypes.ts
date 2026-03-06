@@ -14,3 +14,21 @@ export interface Lead {
 
 export type LeadFormData = Omit<Lead, "id" | "createdAt" | "updatedAt">;
 
+export interface LeadApiDto {
+  id: string;
+  name: string;
+  phone: string;
+  location?: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function leadFromApi(dto: LeadApiDto): Lead {
+  return {
+    ...dto,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  };
+}
+

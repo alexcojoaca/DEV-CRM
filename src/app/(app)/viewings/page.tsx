@@ -15,13 +15,8 @@ import { ViewingListItem } from "@/components/viewings/ViewingListItem";
 import { ViewingDetailPanel } from "@/components/viewings/ViewingDetailPanel";
 import { ViewingForm } from "@/components/viewings/ViewingForm";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  getViewings,
-  addViewing,
-  updateViewing,
-  deleteViewing,
-} from "@/features/viewings/viewingMockData";
 import type { Viewing, ViewingFormData } from "@/features/viewings/viewingTypes";
+import { viewingFromApi } from "@/features/viewings/viewingTypes";
 import { getProperties, getPropertyById } from "@/features/properties/propertyMockData";
 import { getClients, getClientById } from "@/features/clients/clientMockData";
 import { Plus, Search, Calendar, ArrowLeft, Bell, X } from "lucide-react";
@@ -89,17 +84,47 @@ function ViewingsPageContent() {
   }, [searchParams, workspaceId]);
 
   useEffect(() => {
-    const list = getViewings(workspaceId);
-    setViewings(list);
-    const now = Date.now();
-    const twentyFourHoursMs = 24 * 60 * 60 * 1000;
-    const overdue = list.filter(
-      (v) =>
-        v.status === "scheduled" &&
-        v.scheduledAt &&
-        now - new Date(v.scheduledAt).getTime() >= twentyFourHoursMs
-    ).map((v) => v.id);
-    setOverdueViewingIds(overdue);
+    if (!workspaceId) {
+      setViewings([]);
+      setOverdueViewingIds([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/viewings", { credentials: "include" });
+        if (!res.ok) {
+          if (!cancelled) {
+            setViewings([]);
+            setOverdueViewingIds([]);
+          }
+          return;
+        }
+        const data = await res.json();
+        if (cancelled) return;
+        const list = (data as any[]).map((v) => viewingFromApi(v));
+        setViewings(list);
+        const now = Date.now();
+        const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+        const overdue = list
+          .filter(
+            (v) =>
+              v.status === "scheduled" &&
+              v.scheduledAt &&
+              now - v.scheduledAt.getTime() >= twentyFourHoursMs
+          )
+          .map((v) => v.id);
+        setOverdueViewingIds(overdue);
+      } catch {
+        if (!cancelled) {
+          setViewings([]);
+          setOverdueViewingIds([]);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [workspaceId]);
 
   useEffect(() => {
@@ -154,23 +179,58 @@ function ViewingsPageContent() {
   };
 
   const handleSaveNew = () => {
-    addViewing(workspaceId, addFormData);
-    setViewings(getViewings(workspaceId));
-    setViewMode("list");
-    setSelectedId(null);
+    if (!workspaceId) return;
+    void (async () => {
+      const payload = {
+        ...addFormData,
+        scheduledAt: addFormData.scheduledAt?.toISOString(),
+      };
+      const res = await fetch("/api/viewings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) return;
+      const created = viewingFromApi(await res.json());
+      setViewings((prev) => [...prev, created]);
+      setViewMode("list");
+      setSelectedId(null);
+    })();
   };
 
   const handleUpdate = (id: string, data: ViewingFormData) => {
-    updateViewing(workspaceId, id, data);
-    setViewings(getViewings(workspaceId));
+    if (!workspaceId) return;
+    void (async () => {
+      const payload = {
+        ...data,
+        scheduledAt: data.scheduledAt?.toISOString(),
+      };
+      const res = await fetch(`/api/viewings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) return;
+      const updated = viewingFromApi(await res.json());
+      setViewings((prev) => prev.map((v) => (v.id === id ? updated : v)));
+    })();
   };
 
   const handleDelete = (id: string) => {
     if (confirm("Ștergi vizionarea?")) {
-      deleteViewing(workspaceId, id);
-      setViewings(getViewings(workspaceId));
-      setViewMode("list");
-      setSelectedId(null);
+      if (!workspaceId) return;
+      void (async () => {
+        const res = await fetch(`/api/viewings/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) return;
+        setViewings((prev) => prev.filter((v) => v.id !== id));
+        setViewMode("list");
+        setSelectedId(null);
+      })();
     }
   };
 

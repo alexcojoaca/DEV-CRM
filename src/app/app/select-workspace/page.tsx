@@ -1,36 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface SessionMembership {
-  workspaceId: string;
-  workspaceName: string;
-  role: string;
-}
-
-interface Session {
-  user: { id: string; email: string; fullName: string | null };
-  memberships: SessionMembership[];
-  activeWorkspaceId: string | null;
-}
+import { refreshSession } from "@/features/session/refreshSession";
+import { useAuthSessionWithMemberships } from "@/features/workspaces/useWorkspace";
 
 export default function SelectWorkspacePage() {
   const router = useRouter();
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/auth/session")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.session) setSession(data.session);
-        else router.replace("/auth/login");
-      })
-      .finally(() => setLoading(false));
-  }, [router]);
+  const { session, loading } = useAuthSessionWithMemberships();
 
   const handleSelect = async (workspaceId: string) => {
     const res = await fetch("/api/workspaces/set-active", {
@@ -38,13 +16,17 @@ export default function SelectWorkspacePage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ workspaceId }),
     });
-    if (res.ok) {
-      router.push("/dashboard");
-      router.refresh();
-    }
+    if (!res.ok) return;
+    refreshSession();
+    router.push("/dashboard");
+    router.refresh();
   };
 
-  if (loading || !session) return <div className="flex min-h-screen items-center justify-center">Se încarcă…</div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center">Se încarcă…</div>;
+  if (!session) {
+    router.replace("/auth/login");
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 p-4">

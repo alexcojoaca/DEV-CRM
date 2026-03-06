@@ -1,36 +1,11 @@
 "use client";
 
 import type { Client } from "./clientTypes";
+import { createWorkspaceLocalStorage } from "@/features/storage/workspaceLocalStorage";
 
-const STORAGE_KEY_PREFIX = "crm_clients_";
-
-function reviver(_key: string, value: unknown): unknown {
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
-  }
-  return value;
-}
-
-function loadFromStorage(workspaceId: string | null): Client[] {
-  if (typeof window === "undefined" || !workspaceId) return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + workspaceId);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw, reviver) as Client[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(workspaceId: string | null, list: Client[]) {
-  if (typeof window === "undefined" || !workspaceId) return;
-  try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + workspaceId, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
-}
+const { load: loadFromStorage, save: saveToStorage } = createWorkspaceLocalStorage<Client>({
+  prefix: "crm_clients_",
+});
 
 export function getClients(workspaceId: string | null): Client[] {
   const store = loadFromStorage(workspaceId);

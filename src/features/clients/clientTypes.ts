@@ -51,6 +51,41 @@ export interface Client {
 
 export type ClientFormData = Omit<Client, "id" | "createdAt" | "updatedAt">;
 
+export interface ClientApiDto {
+  id: string;
+  transactionType: ClientTransactionType;
+  propertyType: ClientPropertyType;
+  name: string;
+  phone: string;
+  email?: string;
+  county?: string;
+  zone?: string;
+  roomsMin?: number;
+  roomsMax?: number;
+  surfaceMin?: number;
+  surfaceMax?: number;
+  budgetMin?: number;
+  budgetMax?: number;
+  constructionYearMin?: number;
+  status: ClientStatus;
+  source: ClientSource;
+  notes?: string;
+  lastContactedAt?: string | null;
+  followUpCount?: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function clientFromApi(dto: ClientApiDto): Client {
+  return {
+    ...dto,
+    lastContactedAt: dto.lastContactedAt ? new Date(dto.lastContactedAt) : undefined,
+    followUpCount: dto.followUpCount ?? undefined,
+    createdAt: new Date(dto.createdAt),
+    updatedAt: new Date(dto.updatedAt),
+  };
+}
+
 export const TRANSACTION_TYPE_LABELS: Record<ClientTransactionType, string> = {
   sale: "Vânzare",
   rent: "Chirie",

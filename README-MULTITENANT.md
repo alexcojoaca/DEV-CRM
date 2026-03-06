@@ -66,7 +66,7 @@ npm run dev
 - **Register** `POST /api/auth/register`: creates `User` (email, passwordHash, fullName).
 - **Login** `POST /api/auth/login`: checks password, loads memberships, sets httpOnly cookie with JWT (user, memberships, activeWorkspaceId).
 - **Logout** `POST /api/auth/logout`: clears cookie.
-- **Session** `GET /api/auth/session`: returns current session from cookie (for client-side).
+- **Session** `GET /api/auth/session`: returns current session (user, memberships, activeWorkspaceId, activeRole, activeWorkspaceName) from cookie (for client-side).
 - **Middleware** (`src/middleware.ts`): protects `/app/*`. Redirects to `/auth/login` if no/invalid session, to `/onboarding/create-workspace` if no memberships, to `/app/select-workspace` if no active workspace.
 
 ### Multi-tenant & RBAC
@@ -74,13 +74,11 @@ npm run dev
 - **Workspace**: one per agency/team. Creator is **OWNER**.
 - **WorkspaceMembership**: user + workspace + role (`OWNER` | `MANAGER` | `AGENT`).
 - **WorkspaceInvite**: invited email, role (`MANAGER` | `AGENT`), status `PENDING` | `ACCEPTED` | `REVOKED`. Invited user must already exist (register first).
-- **Scoping** (`src/features/scoping/`):
+- **Scoping** (`src/features/scoping.ts`):
   - `requireAuth()` – throws if not logged in.
-  - `requireActiveWorkspace()` – throws if no workspace selected.
-  - `getMembership()` – current user’s membership in active workspace.
+  - `requireMembership()` – ensures there is an active workspace and returns `{ user, activeWorkspaceId, role, workspaceName }`.
   - `requireRole(allowed)` – throws if current role not in allowed list.
-  - **AGENT**: can only access records where `assignedToUserId === currentUserId`.
-  - **MANAGER/OWNER**: can access all workspace records.
+  - `canAccessByAssignment(role, userId, ownerUserId)` – OWNER/MANAGER can access any record; AGENT can access only assigned or unassigned records.
 - **Role changes**: OWNER can change MANAGER/AGENT; MANAGER can change only AGENT.
 
 ### File storage (local)
@@ -98,12 +96,18 @@ npm run dev
 
 ### Code layout
 
-- `src/lib/` – prisma, crypto (bcrypt), errors.
+- `src/lib/` – Prisma client, crypto (bcrypt), errors, temporary PDF/prezentare/import stores.
 - `src/features/auth/` – types, session (encode/decode JWT, cookie).
-- `src/features/scoping/` – requireAuth, requireMembership, requireRole, scopeWhere, canAccessByAssignment.
-- `src/features/workspaces/` – create workspace, set-active (cookie).
+- `src/features/scoping.ts` – `requireAuth`, `requireMembership`, `requireRole`, `canAccessByAssignment`.
+- `src/features/workspaces/` – reusable workspace hooks (`useWorkspaceInfo`, `useActiveWorkspaceId`, etc.).
 - `src/features/team/` – invite, accept, revoke, remove member, change role (API routes under `src/app/api/`).
 - `src/features/files/` – types, localStorage service, thumbnails.
+- `src/features/leads/` – Prisma-backed leads types and API integration.
+- `src/features/clients/` – Prisma-backed clients types and API integration.
+- `src/features/deals/` – Prisma-backed deals types and API integration.
+- `src/features/properties/` – property types, mapping between Prisma and frontend.
+- `src/features/viewings/` – viewing types and API integration.
+- `src/features/tasks/` – task types and API integration.
 
 ### API routes (summary)
 
@@ -122,6 +126,18 @@ npm run dev
 | `/api/team/change-role` | POST | Change member role |
 | `/api/files/upload` | POST | Upload file (FormData), quota check, FileAsset |
 | `/api/files/[id]` | GET | Download file (auth + scoping) |
+| `/api/leads` | GET/POST | List/create leads (workspace-scoped) |
+| `/api/leads/[id]` | PATCH/DELETE | Update/delete a lead (assignment + role checks) |
+| `/api/clients` | GET/POST | List/create clients (workspace-scoped) |
+| `/api/clients/[id]` | PATCH/DELETE | Update/delete a client (assignment + role checks) |
+| `/api/deals` | GET/POST | List/create deals (workspace-scoped) |
+| `/api/deals/[id]` | PATCH/DELETE | Update/delete a deal (assignment + role checks) |
+| `/api/properties` | GET/POST | List/create properties (workspace-scoped) |
+| `/api/properties/[id]` | GET/PATCH/DELETE | Get/update/delete a property (assignment + role checks) |
+| `/api/viewings` | GET/POST | List/create viewings (workspace-scoped) |
+| `/api/viewings/[id]` | PATCH/DELETE | Update/delete a viewing (assignment + role checks) |
+| `/api/tasks` | GET/POST | List/create tasks (workspace-scoped) |
+| `/api/tasks/[id]` | PATCH/DELETE | Update/delete a task (assignment + role checks) |
 
 ## Swapping storage to Supabase/S3
 

@@ -15,18 +15,12 @@ import { TaskListItem } from "@/components/tasks/TaskListItem";
 import { TaskDetailPanel } from "@/components/tasks/TaskDetailPanel";
 import { TaskForm } from "@/components/tasks/TaskForm";
 import { EmptyState } from "@/components/common/EmptyState";
-import {
-  getTasks,
-  addTask,
-  updateTask,
-  deleteTask,
-  toggleTaskCompleted,
-} from "@/features/tasks/taskMockData";
 import type { Task, TaskFormData } from "@/features/tasks/taskTypes";
-import { TASK_PRIORITY_OPTIONS } from "@/features/tasks/taskTypes";
+import { TASK_PRIORITY_OPTIONS, taskFromApi } from "@/features/tasks/taskTypes";
 import { Plus, Search, ArrowLeft, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isPast, isToday, startOfDay, endOfDay } from "date-fns";
+import { useSession } from "@/features/session/useSession";
 
 type ViewMode = "list" | "detail" | "add";
 type DateFilter = "all" | "today" | "overdue" | "upcoming" | "done";
@@ -61,6 +55,8 @@ function filterByDateFilter(tasks: Task[], filter: DateFilter): Task[] {
 }
 
 export default function TasksPage() {
+  const { organization } = useSession();
+  const workspaceId = organization?.id ?? null;
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filtered, setFiltered] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
@@ -71,8 +67,30 @@ export default function TasksPage() {
   const [addFormData, setAddFormData] = useState<TaskFormData>(defaultFormData);
 
   useEffect(() => {
-    setTasks(getTasks());
-  }, []);
+    if (!workspaceId) {
+      setTasks([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/tasks", { credentials: "include" });
+        if (!res.ok) {
+          setTasks([]);
+          return;
+        }
+        const data = await res.json();
+        if (!cancelled) {
+          setTasks((data as any[]).map((t) => taskFromApi(t)));
+        }
+      } catch {
+        if (!cancelled) setTasks([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [workspaceId]);
 
   useEffect(() => {
     let list = filterByDateFilter(tasks, dateFilter);
@@ -108,28 +126,67 @@ export default function TasksPage() {
   };
 
   const handleSaveNew = () => {
-    addTask(addFormData);
-    setTasks(getTasks());
-    setViewMode("list");
-    setSelectedId(null);
+    if (!workspaceId) return;
+    void (async () => {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(addFormData),
+      });
+      if (!res.ok) return;
+      const created = taskFromApi(await res.json());
+      setTasks((prev) => [...prev, created]);
+      setViewMode("list");
+      setSelectedId(null);
+    })();
   };
 
   const handleUpdate = (id: string, data: TaskFormData) => {
-    updateTask(id, data);
-    setTasks(getTasks());
+    if (!workspaceId) return;
+    void (async () => {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) return;
+      const updated = taskFromApi(await res.json());
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    })();
   };
 
   const handleToggle = (id: string) => {
-    toggleTaskCompleted(id);
-    setTasks(getTasks());
+    if (!workspaceId) return;
+    const current = tasks.find((t) => t.id === id);
+    if (!current) return;
+    void (async () => {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ completed: !current.completed }),
+      });
+      if (!res.ok) return;
+      const updated = taskFromApi(await res.json());
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
+    })();
   };
 
   const handleDelete = (id: string) => {
     if (confirm("Ștergi această sarcină?")) {
-      deleteTask(id);
-      setTasks(getTasks());
-      setViewMode("list");
-      setSelectedId(null);
+      if (!workspaceId) return;
+      void (async () => {
+        const res = await fetch(`/api/tasks/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+        if (!res.ok) return;
+        setTasks((prev) => prev.filter((t) => t.id !== id));
+        setViewMode("list");
+        setSelectedId(null);
+      })();
     }
   };
 

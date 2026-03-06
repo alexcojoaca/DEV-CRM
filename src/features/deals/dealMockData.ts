@@ -1,15 +1,7 @@
 "use client";
 
 import type { Deal, DealEvent, DealFormData, DealOffer } from "./dealTypes";
-
-const STORAGE_KEY_PREFIX = "crm_deals_";
-
-function reviver(_key: string, value: unknown): unknown {
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-    return new Date(value);
-  }
-  return value;
-}
+import { createWorkspaceLocalStorage } from "@/features/storage/workspaceLocalStorage";
 
 function normalizeDeal(d: Deal & { signDate?: Date; signDateTitle?: string }): Deal {
   const events: DealEvent[] = Array.isArray(d.events) ? d.events : [];
@@ -32,27 +24,10 @@ function normalizeDeal(d: Deal & { signDate?: Date; signDateTitle?: string }): D
   return withEvents as Deal;
 }
 
-function loadFromStorage(workspaceId: string | null): Deal[] {
-  if (typeof window === "undefined" || !workspaceId) return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_PREFIX + workspaceId);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw, reviver) as (Deal & { signDate?: Date; signDateTitle?: string })[];
-    const list = Array.isArray(parsed) ? parsed : [];
-    return list.map(normalizeDeal);
-  } catch {
-    return [];
-  }
-}
-
-function saveToStorage(workspaceId: string | null, list: Deal[]) {
-  if (typeof window === "undefined" || !workspaceId) return;
-  try {
-    localStorage.setItem(STORAGE_KEY_PREFIX + workspaceId, JSON.stringify(list));
-  } catch {
-    // ignore
-  }
-}
+const { load: loadFromStorage, save: saveToStorage } = createWorkspaceLocalStorage<Deal>({
+  prefix: "crm_deals_",
+  normalize: (item) => normalizeDeal(item as Deal & { signDate?: Date; signDateTitle?: string }),
+});
 
 export function getDeals(workspaceId: string | null): Deal[] {
   const dealsStore = loadFromStorage(workspaceId);

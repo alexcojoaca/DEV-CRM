@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireMembership, canAccessByAssignment } from "@/features/scoping";
 import { UnauthorizedError, ForbiddenError, NotFoundError } from "@/lib/errors";
 import type { DealStatus, DealTransactionType, DealSide, DealOffer, DealPropertyMatch, DealDocumentAttachment, DealChecklistItem, DealEvent } from "@/features/deals/dealTypes";
+
+function toJsonValue(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
 
 function toFrontendDeal(row: {
   id: string;
@@ -118,16 +123,16 @@ export async function PATCH(
       listingPrice: body.listingPrice ?? undefined,
       delistPrice: body.delistPrice ?? undefined,
       notes: body.notes !== undefined ? (body.notes?.trim() || null) : undefined,
-      offersJson: body.offers ?? undefined,
-      matchedPropertiesJson: body.matchedProperties ?? undefined,
-      documentsJson: body.documents ?? undefined,
-      checklistJson: body.checklist ?? undefined,
-      eventsJson: body.events ?? undefined,
+      offersJson: body.offers !== undefined ? toJsonValue(body.offers) : undefined,
+      matchedPropertiesJson: body.matchedProperties !== undefined ? toJsonValue(body.matchedProperties) : undefined,
+      documentsJson: body.documents !== undefined ? toJsonValue(body.documents) : undefined,
+      checklistJson: body.checklist !== undefined ? toJsonValue(body.checklist) : undefined,
+      eventsJson: body.events !== undefined ? toJsonValue(body.events) : undefined,
     };
 
     const updated = await prisma.deal.update({
       where: { id },
-      data,
+      data: data as Prisma.DealUpdateInput,
     });
 
     return NextResponse.json(toFrontendDeal(updated));

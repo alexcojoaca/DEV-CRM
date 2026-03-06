@@ -13,7 +13,7 @@ import {
 import { DealListItem } from "@/components/deals/DealListItem";
 import { DealDetailPanel } from "@/components/deals/DealDetailPanel";
 import { EmptyState } from "@/components/common/EmptyState";
-import type { DealFormData } from "@/features/deals/dealTypes";
+import type { Deal } from "@/features/deals/dealTypes";
 import { DEAL_STATUS_OPTIONS, DEAL_TRANSACTION_TYPE_OPTIONS, dealFromApi } from "@/features/deals/dealTypes";
 import { getClients, getClientById } from "@/features/clients/clientMockData";
 import { Plus, Search, ArrowLeft } from "lucide-react";
@@ -25,7 +25,7 @@ type PanelMode = "empty" | "select_client" | "view";
 export default function DealsPage() {
   const { organization } = useSession();
   const workspaceId = organization?.id ?? null;
-  const [deals, setDeals] = useState<DealFormData[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");

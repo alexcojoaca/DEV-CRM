@@ -184,6 +184,7 @@ model Client {
   propertyType     String   @default("apartment")
   name             String
   phone            String
+  email            String?
   county           String?
   zone             String?
   roomsMin         Int?

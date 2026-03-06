@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireMembership } from "@/features/scoping";
 import { UnauthorizedError, ForbiddenError } from "@/lib/errors";
 import type { DealStatus, DealTransactionType, DealSide, DealOffer, DealPropertyMatch, DealDocumentAttachment, DealChecklistItem, DealEvent } from "@/features/deals/dealTypes";
+
+/** Cast to Prisma's JSON input type for Json columns */
+function toJsonValue(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
 
 function toFrontendDeal(row: {
   id: string;
@@ -125,11 +131,11 @@ export async function POST(request: Request) {
         listingPrice: body.listingPrice ?? null,
         delistPrice: body.delistPrice ?? null,
         notes: body.notes?.trim() || null,
-        offersJson: body.offers ?? [],
-        matchedPropertiesJson: body.matchedProperties ?? [],
-        documentsJson: body.documents ?? [],
-        checklistJson: body.checklist ?? [],
-        eventsJson: body.events ?? [],
+        offersJson: toJsonValue(body.offers ?? []),
+        matchedPropertiesJson: toJsonValue(body.matchedProperties ?? []),
+        documentsJson: toJsonValue(body.documents ?? []),
+        checklistJson: toJsonValue(body.checklist ?? []),
+        eventsJson: toJsonValue(body.events ?? []),
       },
     });
 

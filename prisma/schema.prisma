@@ -25,14 +25,19 @@ model User {
   fileAssets    FileAsset[]
   storageQuotas StorageQuota[]
 
-  leadsCreated    Lead[]    @relation("LeadCreatedBy")
-  leadsAssigned   Lead[]    @relation("LeadAssignedTo")
-  clientsCreated  Client[]  @relation("ClientCreatedBy")
-  clientsAssigned Client[]  @relation("ClientAssignedTo")
-  dealsCreated    Deal[]    @relation("DealCreatedBy")
-  dealsAssigned   Deal[]    @relation("DealAssignedTo")
+  leadsCreated      Lead[]      @relation("LeadCreatedBy")
+  leadsAssigned     Lead[]      @relation("LeadAssignedTo")
+  clientsCreated    Client[]    @relation("ClientCreatedBy")
+  clientsAssigned   Client[]    @relation("ClientAssignedTo")
+  dealsCreated      Deal[]      @relation("DealCreatedBy")
+  dealsAssigned     Deal[]      @relation("DealAssignedTo")
   propertiesCreated  Property[] @relation("PropertyCreatedBy")
   propertiesAssigned Property[] @relation("PropertyAssignedTo")
+
+  viewingsCreated   Viewing[]  @relation("ViewingCreatedBy")
+  viewingsAssigned  Viewing[]  @relation("ViewingAssignedTo")
+  tasksCreated      Task[]     @relation("TaskCreatedBy")
+  tasksAssigned     Task[]     @relation("TaskAssignedTo")
 }
 
 model Workspace {
@@ -48,6 +53,8 @@ model Workspace {
   clients       Client[]
   deals         Deal[]
   properties    Property[]
+  viewings      Viewing[]
+  tasks         Task[]
 }
 
 enum WorkspaceRole {

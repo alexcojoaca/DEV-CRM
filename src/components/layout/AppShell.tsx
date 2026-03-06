@@ -18,7 +18,7 @@ export function AppShell({ children }: AppShellProps) {
   const showLeftBarFull = isOnDashboard || leftBarExpanded;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-mobile-safe flex-col overflow-hidden">
       <Topbar />
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}

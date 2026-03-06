@@ -99,6 +99,20 @@
 }
 
 @layer utilities {
+  /* Pe mobil: 100dvh se ajustează când tastatura se deschide (fallback pentru browsere fără interactive-widget) */
+  .h-mobile-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+  .min-h-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  .h-panel-mobile-safe {
+    height: calc(100vh - 5rem);
+    height: calc(100dvh - 5rem);
+  }
+
   .glass {
     @apply bg-white/80 backdrop-blur-xl border border-white/20;
   }

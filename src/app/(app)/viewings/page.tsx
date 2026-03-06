@@ -244,7 +244,7 @@ function ViewingsPageContent() {
   const showAdd = viewMode === "add";
 
   return (
-    <div className="-m-4 flex h-[calc(100vh-5rem)] min-h-[480px] overflow-hidden rounded-xl border border-purple-200/50 bg-white shadow-lg lg:h-[calc(100vh-5rem)]">
+    <div className="-m-4 flex h-panel-mobile-safe min-h-[480px] overflow-hidden rounded-xl border border-purple-200/50 bg-white shadow-lg">
       {/* Left: list + search + filters + add */}
       <div
         className={cn(
@@ -419,7 +419,7 @@ export default function ViewingsPage() {
   return (
     <Suspense
       fallback={
-        <div className="-m-4 flex h-[calc(100vh-5rem)] min-h-[480px] items-center justify-center rounded-xl border border-purple-200/50 bg-white">
+        <div className="-m-4 flex h-panel-mobile-safe min-h-[480px] items-center justify-center rounded-xl border border-purple-200/50 bg-white">
           <div className="h-32 w-32 rounded-full border-4 border-purple-200 border-t-purple-500 animate-spin" />
         </div>
       }

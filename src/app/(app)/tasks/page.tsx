@@ -215,7 +215,7 @@ export default function TasksPage() {
           </Button>
         }
       />
-      <div className="-m-4 flex h-[calc(100vh-5rem)] min-h-[480px] overflow-hidden rounded-xl border-2 border-purple-200/50 bg-white shadow-lg lg:h-[calc(100vh-5rem)] bg-gradient-to-br from-white via-purple-50/10 to-pink-50/10">
+      <div className="-m-4 flex h-panel-mobile-safe min-h-[480px] overflow-hidden rounded-xl border-2 border-purple-200/50 bg-white shadow-lg bg-gradient-to-br from-white via-purple-50/10 to-pink-50/10">
       <div
         className={cn(
           "flex w-full flex-col border-r border-purple-100 bg-gradient-to-b from-white to-purple-50/20 lg:w-[380px] lg:flex-shrink-0",
